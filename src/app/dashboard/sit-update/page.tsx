@@ -292,7 +292,7 @@ export default function SiteUpdate() {
                           {c.image ? (
                             <img
                               src={URL.createObjectURL(c.image)}
-                              alt={c.name}
+                              alt={c.title}
                               className="h-12 w-12 object-cover rounded"
                             />
                           ) : (
@@ -365,7 +365,7 @@ export default function SiteUpdate() {
                           {p.image ? (
                             <img
                               src={URL.createObjectURL(p.image)}
-                              alt={p.name}
+                              alt={p.passage}
                               className="h-12 w-12 object-cover rounded"
                             />
                           ) : (
