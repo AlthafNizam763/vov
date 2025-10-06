@@ -76,6 +76,18 @@ export default function SiteUpdate() {
       .then(setCampaigns);
   }, []);
 
+  // Fetch hero data from backend
+  useEffect(() => {
+    fetch("/api/hero")
+      .then((res) => res.json())
+      .then((data) => {
+        setHeroHeading(data.heading);
+        setHeroHeadline(data.headline);
+        setHeroPassage(data.passage);
+        setHeroAmount(data.amount);
+      });
+  }, []);
+
   // Add campaign
   const handleAddCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,8 +141,18 @@ export default function SiteUpdate() {
   };
 
   // Hero Section submit
-  const handleHeroSubmit = (e: React.FormEvent) => {
+  const handleHeroSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await fetch("/api/hero", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        heading: heroHeading,
+        headline: heroHeadline,
+        passage: heroPassage,
+        amount: heroAmount,
+      }),
+    });
     alert("✅ Hero section updated!");
   };
 
