@@ -42,10 +42,10 @@ export default function Dashboard() {
 
           {/* Stats Cards */}
           <div className="text-[#1E1E2F] grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <StatCard title="Total Balance" amount="$632.000" icon="💰" />
-            <StatCard title="Total Income" amount="$632.000" icon="👤" />
-            <StatCard title="Total Saving" amount="$632.000" icon="💳" />
-            <StatCard title="Total Outcome" amount="$632.000" icon="📉" />
+            <StatCard title="Total Balance" amount="₹632.000" icon="💰" />
+            <StatCard title="Total Income" amount="₹632.000" icon="👤" />
+            <StatCard title="Total Saving" amount="₹632.000" icon="💳" />
+            <StatCard title="Total Outcome" amount="₹632.000" icon="📉" />
           </div>
 
           {/* Analytics + Cards */}
@@ -100,97 +100,97 @@ export default function Dashboard() {
               <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
                 <TransactionRow
                 name="Adobe After Effect"
                 date="Sat, 20 Apr 2020"
-                amount="$80.09"
+                amount="₹80.09"
                 status="Income"
               />
               <TransactionRow
                 name="McDonald's"
                 date="Fri, 19 Apr 2020"
-                amount="$7.03"
+                amount="₹7.03"
                 status="Outcome"
               />
               {/* add more rows */}
