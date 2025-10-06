@@ -9,7 +9,7 @@ export default function EditUser() {
   const searchParams = useSearchParams();
 
   // Get userId from query params (example: /dashboard/user-manager/edit?id=2)
-  const userId = searchParams.get("id");
+  const userId = searchParams?.get("id");
 
   // Mock existing user (replace with API call in real app)
   const mockUser = {
