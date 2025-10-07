@@ -1,6 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-let campaigns: any[] = [
+type Campaign = {
+  id: number;
+  title: string;
+  passage: string;
+  amount: string;
+  detail: string;
+  image: string;
+};
+
+let campaigns: Campaign[] = [
   {
     id: 1,
     title: "Supporting Children’s Education",
@@ -15,7 +24,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     res.status(200).json(campaigns);
   } else if (req.method === "POST") {
-    const newCampaign = { ...req.body, id: Date.now() };
+    const newCampaign: Campaign = { ...req.body, id: Date.now() };
     campaigns.push(newCampaign);
     res.status(201).json(newCampaign);
   } else if (req.method === "DELETE") {

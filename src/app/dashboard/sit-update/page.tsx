@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
 
@@ -290,9 +291,11 @@ export default function SiteUpdate() {
                         <td className="p-2">{c.detail}</td>
                         <td className="p-2">
                           {c.image ? (
-                            <img
-                              src={URL.createObjectURL(c.image)}
+                            <Image
+                              src={typeof c.image === "string" ? c.image : URL.createObjectURL(c.image)}
                               alt={c.title}
+                              width={48}
+                              height={48}
                               className="h-12 w-12 object-cover rounded"
                             />
                           ) : (
@@ -363,9 +366,11 @@ export default function SiteUpdate() {
                         <td className="p-2">{p.date}</td>
                         <td className="p-2">
                           {p.image ? (
-                            <img
-                              src={URL.createObjectURL(p.image)}
+                            <Image
+                              src={typeof p.image === "string" ? p.image : URL.createObjectURL(p.image)}
                               alt={p.passage}
+                              width={48}
+                              height={48}
                               className="h-12 w-12 object-cover rounded"
                             />
                           ) : (
@@ -436,9 +441,11 @@ export default function SiteUpdate() {
                         <td className="p-2">{t.Description}</td>
                         <td className="p-2">
                           {t.image ? (
-                            <img
-                              src={URL.createObjectURL(t.image)}
+                            <Image
+                              src={typeof t.image === "string" ? t.image : URL.createObjectURL(t.image)}
                               alt={t.name}
+                              width={48}
+                              height={48}
                               className="h-12 w-12 object-cover rounded"
                             />
                           ) : (

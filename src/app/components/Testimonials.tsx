@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Testimonials() {
   return (
     <section id="testimonials" className="bg-white py-16">
@@ -5,10 +7,13 @@ export default function Testimonials() {
         {/* Left Image */}
         <div className="relative flex justify-center">
           {/* <div className="absolute left-0 top-50 bottom-0 w-6 bg-[#4EBC73] rounded-l-2xl hidden md:block"></div> */}
-          <img
+          <Image
             src="/images/Testimonial.jpeg" // replace with your image
             alt="Testimonial"
-            className="rounded-2xl object-cover relative z-10 w-[260px] h-[471px]"
+            className="rounded-2xl object-cover relative z-10"
+            width={260}
+            height={471}
+            priority
           />
           {/* <div className="absolute right-0 top-50 bottom-0 w-6 bg-[#4EBC73] rounded-r-2xl hidden md:block"></div> */}
         </div>

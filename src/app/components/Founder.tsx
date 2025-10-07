@@ -1,4 +1,5 @@
-// components/Founder.tsx
+import Image from "next/image";
+
 export default function Founder() {
   return (
     <section id="founder" className="bg-white py-16">
@@ -10,10 +11,13 @@ export default function Founder() {
             <div className="absolute -top-4 -left-4 w-80 h-100 bg-[#4EBC73] rounded-tr-3xl rounded-bl-3xl z-0"></div>
 
             <div className="relative rounded-2xl overflow-hidden shadow-lg z-10">
-              <img
+              <Image
                 src="/images/founder.jpeg"
                 alt="Founder"
                 className="w-full h-auto object-cover"
+                width={320}
+                height={400}
+                priority
               />
             </div>
           </div>

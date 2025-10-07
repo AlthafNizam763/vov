@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Sidebar from "../../Sidebar";
 import Topbar from "../../Topbar";
@@ -34,12 +34,15 @@ function EditUserInner() {
   const userId = searchParams?.get("id");
 
   // Mock existing user (replace with API call in real app)
-  const mockUser = {
-    id: userId || 1,
-    name: "John Doe",
-    email: "john@example.com",
-    role: "Admin",
-  };
+  const mockUser = useMemo(
+    () => ({
+      id: userId || 1,
+      name: "John Doe",
+      email: "john@example.com",
+      role: "Admin",
+    }),
+    [userId]
+  );
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -47,12 +50,10 @@ function EditUserInner() {
 
   // Pre-fill fields with user data
   useEffect(() => {
-    if (mockUser) {
-      setName(mockUser.name);
-      setEmail(mockUser.email);
-      setRole(mockUser.role);
-    }
-  }, [userId]);
+    setName(mockUser.name);
+    setEmail(mockUser.email);
+    setRole(mockUser.role);
+  }, [mockUser]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

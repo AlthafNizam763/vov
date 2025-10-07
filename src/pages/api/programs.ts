@@ -1,6 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-let programs: any[] = [
+type Program = {
+  id: number;
+  passage: string;
+  date: string;
+  image: string;
+};
+
+let programs: Program[] = [
   {
     id: 1,
     passage: "Spreading Awareness, Saving Lives",
@@ -13,7 +20,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     res.status(200).json(programs);
   } else if (req.method === "POST") {
-    const newProgram = { ...req.body, id: Date.now() };
+    const newProgram: Program = { ...req.body, id: Date.now() };
     programs.push(newProgram);
     res.status(201).json(newProgram);
   } else if (req.method === "DELETE") {

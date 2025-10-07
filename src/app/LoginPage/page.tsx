@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaUser, FaLock, FaTimes } from "react-icons/fa"; // Add FaTimes for cross icon
+import { FaUser, FaLock } from "react-icons/fa";
+import * as FaIcons from "react-icons/fa";
 
 export default function GlassLogin() {
   const [username, setUsername] = useState("");
@@ -41,7 +42,7 @@ export default function GlassLogin() {
           className="absolute top-4 right-4 text-white hover:text-red-400 text-2xl"
           aria-label="Close"
         >
-          <FaTimes />
+          <FaIcons.FaTimes />
         </button>
 
         <h2 className="text-center font-semibold text-white text-xl mb-6 drop-shadow-md">

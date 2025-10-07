@@ -4,11 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutGrid,
-  Clock,
   User,
   CreditCard,
-  Settings,
-  HelpCircle,
   LogOut,
 } from "lucide-react";
 
@@ -17,16 +14,9 @@ export default function Sidebar() {
 
   const mainLinks = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-    // { name: "Activity", href: "/dashboard/sit-update", icon: Clock },
     { name: "Cards", href: "/dashboard/sit-update", icon: CreditCard },
     { name: "Users", href: "/dashboard/user-manager", icon: User },
     { name: "Logout", href: "/LoginPage", icon: LogOut }
-    // { name: "Settings", href: "/settings", icon: Settings },
-  ];
-
-  const bottomLinks = [
-    // { name: "Help", href: "/help", icon: HelpCircle },
-    // { name: "Logout", href: "/LoginPage", icon: LogOut },
   ];
 
   const renderLinks = (links: typeof mainLinks) =>
@@ -53,11 +43,6 @@ export default function Sidebar() {
       <div className="flex flex-col items-center gap-4 bg-gray-900 rounded-full py-4 px-2">
         {renderLinks(mainLinks)}
       </div>
-
-      {/* Bottom pill with help + logout */}
-      {/* <div className="flex flex-col items-center gap-4 bg-gray-900 rounded-full py-3 px-2">
-        {renderLinks(bottomLinks)}
-      </div> */}
     </aside>
   );
 }
