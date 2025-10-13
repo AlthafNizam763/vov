@@ -9,6 +9,7 @@ import Testimonials from './components/Testimonials'
 import Newsletter from './components/Newsletter'
 import Founder from './components/Founder'
 import OurTeam from './components/OurTeam'
+import Contact from './components/ ContactUs'    
 import Footer from './components/Footer'
 
 export default function Page() {
@@ -26,6 +27,7 @@ export default function Page() {
         <Stats />
         <Founder />
         <OurTeam/>
+        <Contact/>
       </main>
       <Footer />
     </>
