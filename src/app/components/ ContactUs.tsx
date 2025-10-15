@@ -1,10 +1,42 @@
+// ./src/app/components/ContactUs.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
+import Image from "next/image"; // ✅ use next/image
 import { Instagram, Twitter, Linkedin } from "lucide-react";
 import { FaDonate } from "react-icons/fa";
+
+// ✅ Type definitions
+interface FormState {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+interface InputFieldProps {
+  label: string;
+  type: string;
+  name: string;
+  value: string;
+  placeholder: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+}
+
+interface AlertBannerProps {
+  iconSrc: string;
+  title: string;
+  description: string;
+  onClose: () => void;
+}
 
 // ✅ Rotating Donate Circle
 function CircularTextPlay() {
@@ -44,8 +76,16 @@ function CircularTextPlay() {
   );
 }
 
-// ✅ Input field component (reusable)
-const InputField = ({ label, type, name, value, placeholder, onChange, error }) => {
+// ✅ Input field
+const InputField: React.FC<InputFieldProps> = ({
+  label,
+  type,
+  name,
+  value,
+  placeholder,
+  onChange,
+  error,
+}) => {
   const id = name;
   return (
     <div className="flex flex-col grow shrink self-stretch my-auto min-w-[240px]">
@@ -69,7 +109,12 @@ const InputField = ({ label, type, name, value, placeholder, onChange, error }) 
 };
 
 // ✅ Popup alert
-const AlertBanner = ({ iconSrc, title, description, onClose }) => {
+const AlertBanner: React.FC<AlertBannerProps> = ({
+  iconSrc,
+  title,
+  description,
+  onClose,
+}) => {
   useEffect(() => {
     const timer = setTimeout(onClose, 2500);
     return () => clearTimeout(timer);
@@ -78,7 +123,14 @@ const AlertBanner = ({ iconSrc, title, description, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
       <div className="flex items-center gap-4 bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full text-gray-800">
-        <img src={iconSrc} alt="icon" className="w-10 h-10" />
+        {/* ✅ Replaced <img> with <Image /> */}
+        <Image
+          src={iconSrc}
+          alt="icon"
+          width={40}
+          height={40}
+          className="w-10 h-10"
+        />
         <div>
           <h4 className="font-semibold text-lg">{title}</h4>
           <p className="text-sm text-gray-600">{description}</p>
@@ -90,14 +142,13 @@ const AlertBanner = ({ iconSrc, title, description, onClose }) => {
 
 // ✅ Contact component
 export default function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" });
+  const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  // ✅ Validation
-  const validateForm = () => {
-    const newErrors: any = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
     if (!form.name.trim()) newErrors.name = "Name is required";
     if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Enter a valid email";
     if (!form.message.trim()) newErrors.message = "Message cannot be empty";
@@ -105,14 +156,13 @@ export default function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Handle submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-     await emailjs.send(
+      await emailjs.send(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
         {
@@ -124,7 +174,6 @@ export default function Contact() {
         },
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
       );
-
 
       setShowPopup(true);
       setForm({ name: "", email: "", message: "" });
