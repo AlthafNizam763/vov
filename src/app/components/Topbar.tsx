@@ -1,4 +1,4 @@
-import { FaTwitter, FaInstagram, FaFacebookF, FaYoutube } from 'react-icons/fa'
+import { FaWhatsapp, FaInstagram, FaFacebookF} from 'react-icons/fa'
 import { IoCall } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 
@@ -10,22 +10,46 @@ export default function TopBar() {
         <div className="flex flex-col sm:flex-row items-center sm:space-x-6 gap-1 sm:gap-0">
           <span className="flex items-center gap-1">
             <IoCall className="text-base" />
-            <span className="hidden xs:inline">+1-206-156 2849</span>
+            <span>+91 8075873624</span>
           </span>
           <span className="flex items-center gap-1">
             <MdEmail className="text-base" />
-            <span className="hidden xs:inline">info.voiceofthevoiceless1@gmail.com</span>
+            <span>info.voiceofthevoiceless1@gmail.com</span>
           </span>
         </div>
 
         {/* Social icons */}
         <div className="flex space-x-4 mt-1 sm:mt-0">
-          <a href="#" aria-label="Twitter" className="hover:text-gray-200"><FaTwitter /></a>
-          <a href="#" aria-label="Instagram" className="hover:text-gray-200"><FaInstagram /></a>
-          <a href="#" aria-label="Facebook" className="hover:text-gray-200"><FaFacebookF /></a>
-          <a href="#" aria-label="YouTube" className="hover:text-gray-200"><FaYoutube /></a>
-        </div>
+        <a
+          href="https://wa.me/7034426975"
+          aria-label="WhatsApp"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-gray-200"
+        >
+          <FaWhatsapp />
+        </a>
+        <a
+          href="https://www.instagram.com/voice__of_the__voiceless?igsh=c2pxbjI5YnpmY3dm"
+          aria-label="Instagram"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-gray-200"
+        >
+          <FaInstagram />
+        </a>
+        <a
+          href="https://www.facebook.com/share/19wxCiJRJK/?mibextid=wwXIfr"
+          aria-label="Facebook"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-gray-200"
+        >
+          <FaFacebookF />
+        </a>
       </div>
-    </div>
-  )
-}
+
+          </div>
+      </div>
+        )
+      }

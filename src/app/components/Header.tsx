@@ -1,39 +1,78 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { AiFillHeart } from 'react-icons/ai'
-import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
-import TopBar from './Topbar'
+import Link from "next/link";
+import { AiFillHeart } from "react-icons/ai";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import TopBar from "./Topbar";
+import Script from "next/script";
 
-export default function NavBar() {
-  const [showNav, setShowNav] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+export default function Header() {
+  const [showNav, setShowNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  // hide navbar on scroll down
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
+      const currentScrollY = window.scrollY;
       if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        setShowNav(false)
+        setShowNav(false);
       } else {
-        setShowNav(true)
+        setShowNav(true);
       }
-      setLastScrollY(currentScrollY)
-    }
+      setLastScrollY(currentScrollY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  // Razorpay payment handler
+  const handleDonate = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/razorpay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 500 }), // ₹500 donation
+      });
+      const order = await res.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Voice of the Voiceless",
+        description: "Donation",
+        order_id: order.id,
+        handler: function (response: any) {
+          alert(`✅ Donation successful! ID: ${response.razorpay_payment_id}`);
+        },
+        theme: { color: "#58A3DC" },
+      };
+
+      const razor = new (window as any).Razorpay(options);
+      razor.open();
+    } catch (error) {
+      console.error(error);
+      alert("❌ Payment failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
+      {/* Razorpay script */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+
       <div
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500
-    ${showNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}
-  `}
-        onClick={() => !showNav && setShowNav(true)} // Add this line
-        style={{ cursor: !showNav ? 'pointer' : 'default' }} // Optional: show pointer when hidden
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+          showNav ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
+        }`}
+        onClick={() => !showNav && setShowNav(true)}
+        style={{ cursor: !showNav ? "pointer" : "default" }}
       >
         <TopBar />
         <nav className="bg-white shadow-sm w-full">
@@ -58,14 +97,24 @@ export default function NavBar() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation"
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
 
             {/* Center Links (desktop) */}
             <div className="hidden md:flex items-center space-x-8 text-[#58A3DC] font-medium">
-              <Link href="#who-we-are" className="hover:text-[#58A3DC] flex items-center gap-1">
+              <a href="#about" className="hover:text-[#58A3DC] flex items-center gap-1">
                 Who we are
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -74,58 +123,74 @@ export default function NavBar() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
-              </Link>
-              <Link href="#campaigns" className="hover:text-[#58A3DC]">
+              </a>
+              <a href="#campaigns" className="hover:text-[#58A3DC]">
                 Our Campaign
-              </Link>
-              <Link href="#news" className="hover:text-[#58A3DC]">
+              </a>
+              <a href="#news" className="hover:text-[#58A3DC]">
                 News
-              </Link>
-              <Link href="#contact" className="hover:text-[#58A3DC]">
+              </a>
+              <a href="#contact" className="hover:text-[#58A3DC]">
                 Contact Us
-              </Link>
+              </a>
             </div>
 
-            {/* Donate Button (desktop) */}
-            <Link
-              href="#donate"
-              className="hidden md:inline-flex items-center border border-[#58A3DC] text-[#58A3DC] hover:bg-sky-50 px-4 py-2 rounded-lg font-semibold transition"
+            {/* ✅ Razorpay Donate Button (desktop) */}
+            <button
+              onClick={handleDonate}
+              disabled={loading}
+              className={`hidden md:inline-flex items-center border border-[#58A3DC] text-[#58A3DC] px-4 py-2 rounded-lg font-semibold transition ${
+                loading
+                  ? "bg-gray-200 cursor-not-allowed"
+                  : "hover:bg-sky-50"
+              }`}
             >
-              Donate Now
+              {loading ? "Processing..." : "Donate Now"}
               <AiFillHeart className="ml-2 text-[#58A3DC]" />
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="md:hidden bg-white px-4 pb-4 pt-2 shadow">
-              <Link href="#who-we-are" className="block py-2 text-[#58A3DC] font-medium">
+              <a href="#about" className="block py-2 text-[#58A3DC] font-medium">
                 Who we are
-              </Link>
-              <Link href="#campaigns" className="block py-2 text-[#58A3DC] font-medium">
+              </a>
+              <a href="#campaigns" className="block py-2 text-[#58A3DC] font-medium">
                 Our Campaign
-              </Link>
-              <Link href="#news" className="block py-2 text-[#58A3DC] font-medium">
+              </a>
+              <a href="#news" className="block py-2 text-[#58A3DC] font-medium">
                 News
-              </Link>
-              <Link href="#contact" className="block py-2 text-[#58A3DC] font-medium">
+              </a>
+              <a href="#contact" className="block py-2 text-[#58A3DC] font-medium">
                 Contact Us
-              </Link>
-              <Link
-                href="#donate"
-                className="block py-2 mt-2 border border-[#58A3DC] text-[#58A3DC] rounded-lg font-semibold text-center"
+              </a>
+              <button
+                onClick={handleDonate}
+                disabled={loading}
+                className={`block py-2 mt-2 border border-[#58A3DC] text-[#58A3DC] rounded-lg font-semibold text-center w-full ${
+                  loading
+                    ? "bg-gray-100 cursor-not-allowed"
+                    : "hover:bg-sky-50"
+                }`}
               >
-                Donate Now
+                {loading ? "Processing..." : "Donate Now"}
                 <AiFillHeart className="ml-2 text-[#58A3DC] inline" />
-              </Link>
+              </button>
             </div>
           )}
         </nav>
       </div>
-      {/* Spacer */}
-      <div style={{ height: '60px' }}></div>
+
+      {/* Spacer to prevent content shift */}
+      <div style={{ height: "60px" }}></div>
     </>
-  )
+  );
 }
