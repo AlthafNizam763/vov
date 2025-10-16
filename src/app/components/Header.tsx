@@ -1,3 +1,4 @@
+// ./src/app/components/Header.tsx
 "use client";
 
 import Link from "next/link";
@@ -7,13 +8,32 @@ import React, { useEffect, useState } from "react";
 import TopBar from "./Topbar";
 import Script from "next/script";
 
+/* ------------------ ✅ Type Definitions ------------------ */
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  theme: { color: string };
+}
+
+/* ------------------ ✅ Main Component ------------------ */
 export default function Header() {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // hide navbar on scroll down
+  /* ------------------ Hide Navbar on Scroll ------------------ */
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -24,12 +44,13 @@ export default function Header() {
       }
       setLastScrollY(currentScrollY);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Razorpay payment handler
-  const handleDonate = async () => {
+  /* ------------------ Razorpay Payment ------------------ */
+  const handleDonate = async (): Promise<void> => {
     setLoading(true);
     try {
       const res = await fetch("/api/razorpay", {
@@ -39,20 +60,21 @@ export default function Header() {
       });
       const order = await res.json();
 
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+      const options: RazorpayOptions = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
         amount: order.amount,
         currency: order.currency,
         name: "Voice of the Voiceless",
         description: "Donation",
         order_id: order.id,
-        handler: function (response: any) {
+        handler: (response: RazorpayResponse) => {
           alert(`✅ Donation successful! ID: ${response.razorpay_payment_id}`);
         },
         theme: { color: "#58A3DC" },
       };
 
-      const razor = new (window as any).Razorpay(options);
+      const RazorpayConstructor = (window as unknown as { Razorpay: new (options: RazorpayOptions) => any }).Razorpay;
+      const razor = new RazorpayConstructor(options);
       razor.open();
     } catch (error) {
       console.error(error);
@@ -62,11 +84,13 @@ export default function Header() {
     }
   };
 
+  /* ------------------ JSX ------------------ */
   return (
     <>
-      {/* Razorpay script */}
+      {/* Razorpay Script */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
+      {/* Navbar Wrapper */}
       <div
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           showNav ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
@@ -81,17 +105,17 @@ export default function Header() {
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/images/vov-logo.png"
-                alt="Voice of the voiceless logo"
+                alt="Voice of the Voiceless logo"
                 width={40}
                 height={40}
                 className="h-8 w-auto"
               />
               <span className="text-gray-900 font-semibold text-lg">
-                Voice of the voiceless
+                Voice of the Voiceless
               </span>
             </Link>
 
-            {/* Hamburger for mobile */}
+            {/* Hamburger Menu (Mobile) */}
             <button
               className="md:hidden flex items-center px-2 py-1 border rounded text-[#58A3DC] border-[#58A3DC]"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -112,7 +136,7 @@ export default function Header() {
               </svg>
             </button>
 
-            {/* Center Links (desktop) */}
+            {/* Desktop Links */}
             <div className="hidden md:flex items-center space-x-8 text-[#58A3DC] font-medium">
               <a href="#about" className="hover:text-[#58A3DC] flex items-center gap-1">
                 Who we are
@@ -142,7 +166,7 @@ export default function Header() {
               </a>
             </div>
 
-            {/* ✅ Razorpay Donate Button (desktop) */}
+            {/* ✅ Donate Button (Desktop) */}
             <button
               onClick={handleDonate}
               disabled={loading}
@@ -189,7 +213,7 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* Spacer to prevent content shift */}
+      {/* Spacer to prevent layout shift */}
       <div style={{ height: "60px" }}></div>
     </>
   );

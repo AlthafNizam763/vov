@@ -1,8 +1,12 @@
+// ./src/pages/api/razorpay/route.ts
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
+/**
+ * Creates a Razorpay order
+ */
 export async function POST(request: Request) {
-  const { amount } = await request.json();
+  const { amount }: { amount: number } = await request.json();
 
   const razorpay = new Razorpay({
     key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
@@ -10,7 +14,7 @@ export async function POST(request: Request) {
   });
 
   const options = {
-    amount: amount * 100, // amount in paisa
+    amount: amount * 100, // Convert to paise
     currency: "INR",
     receipt: `receipt_${Date.now()}`,
   };
@@ -18,8 +22,16 @@ export async function POST(request: Request) {
   try {
     const order = await razorpay.orders.create(options);
     return NextResponse.json(order);
-  } catch (err: any) {
-    console.error("Razorpay error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Razorpay error:", err.message);
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+
+    console.error("Unknown error while creating Razorpay order:", err);
+    return NextResponse.json(
+      { error: "An unexpected error occurred while creating the order." },
+      { status: 500 }
+    );
   }
 }

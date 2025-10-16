@@ -1,3 +1,4 @@
+// ./src/app/components/Hero.tsx
 "use client";
 
 import Image from "next/image";
@@ -6,6 +7,32 @@ import { useEffect, useState } from "react";
 import Script from "next/script";
 import "./hero-animations.css"; // Animation CSS
 
+/* ✅ Type Definitions */
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  theme: { color: string };
+  method?: Record<string, boolean>;
+}
+
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => { open: () => void };
+  }
+}
+
+/* ------------------ Circular Text Play Button ------------------ */
 function CircularTextPlay() {
   const [rotation, setRotation] = useState(0);
 
@@ -27,12 +54,7 @@ function CircularTextPlay() {
             d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"
           />
         </defs>
-        <text
-          fill="#5CA9E9"
-          fontSize="20"
-          fontWeight="bold"
-          letterSpacing="3"
-        >
+        <text fill="#5CA9E9" fontSize="20" fontWeight="bold" letterSpacing="3">
           <textPath href="#circlePath" startOffset="50%" textAnchor="middle">
             ● SEE OUR ACTIVITIES ● SEE OUR ACTIVITIES ●
           </textPath>
@@ -46,35 +68,38 @@ function CircularTextPlay() {
   );
 }
 
+/* ------------------ Hero Section ------------------ */
 export default function Hero() {
   const [loading, setLoading] = useState(false);
 
-  // Razorpay Payment Handler
-  const handlePayment = async (method: string) => {
+  // ✅ Razorpay Payment Handler (Fully Typed)
+  const handlePayment = async (method: string): Promise<void> => {
     setLoading(true);
     try {
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 1000 }), // ₹1000 default
+        body: JSON.stringify({ amount: 1000 }), // ₹1000 donation
       });
       const order = await res.json();
 
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+      const options: RazorpayOptions = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
         amount: order.amount,
         currency: order.currency,
         name: "Voice of the Voiceless",
         description: `Donation via ${method}`,
         order_id: order.id,
-        handler: function (response: any) {
-          alert(`✅ ${method} Payment Success!\nPayment ID: ${response.razorpay_payment_id}`);
+        handler: (response: RazorpayResponse) => {
+          alert(
+            `✅ ${method} Payment Success!\nPayment ID: ${response.razorpay_payment_id}`
+          );
         },
         theme: { color: "#4EBC73" },
         method: { [method.toLowerCase()]: true },
       };
 
-      const razor = new (window as any).Razorpay(options);
+      const razor = new window.Razorpay(options);
       razor.open();
     } catch (err) {
       console.error(err);
@@ -119,7 +144,10 @@ export default function Hero() {
           </p>
 
           {/* CTA */}
-          <div className="mt-8 flex items-center justify-center lg:justify-start" style={{ gap: "2cm" }}>
+          <div
+            className="mt-8 flex items-center justify-center lg:justify-start"
+            style={{ gap: "2cm" }}
+          >
             <a
               href="#about"
               onClick={(e) => {
@@ -128,7 +156,6 @@ export default function Hero() {
                 if (el) {
                   el.scrollIntoView({ behavior: "smooth", block: "start" });
                 } else {
-                  // fallback: update hash so if About is on another route the browser navigates
                   window.location.hash = "#about";
                 }
               }}
