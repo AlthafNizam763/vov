@@ -26,6 +26,15 @@ interface RazorpayOptions {
   theme: { color: string };
 }
 
+/** ✅ Define a minimal Razorpay type instead of `any` */
+interface RazorpayInstance {
+  open: () => void;
+}
+
+interface RazorpayConstructor {
+  new (options: RazorpayOptions): RazorpayInstance;
+}
+
 /* ------------------ ✅ Main Component ------------------ */
 export default function Header() {
   const [showNav, setShowNav] = useState(true);
@@ -73,7 +82,11 @@ export default function Header() {
         theme: { color: "#58A3DC" },
       };
 
-      const RazorpayConstructor = (window as unknown as { Razorpay: new (options: RazorpayOptions) => any }).Razorpay;
+      // ✅ Use a properly typed Razorpay constructor
+      const RazorpayConstructor = (window as unknown as {
+        Razorpay: RazorpayConstructor;
+      }).Razorpay;
+
       const razor = new RazorpayConstructor(options);
       razor.open();
     } catch (error) {
@@ -87,10 +100,8 @@ export default function Header() {
   /* ------------------ JSX ------------------ */
   return (
     <>
-      {/* Razorpay Script */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      {/* Navbar Wrapper */}
       <div
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           showNav ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
@@ -166,14 +177,12 @@ export default function Header() {
               </a>
             </div>
 
-            {/* ✅ Donate Button (Desktop) */}
+            {/* ✅ Donate Button */}
             <button
               onClick={handleDonate}
               disabled={loading}
               className={`hidden md:inline-flex items-center border border-[#58A3DC] text-[#58A3DC] px-4 py-2 rounded-lg font-semibold transition ${
-                loading
-                  ? "bg-gray-200 cursor-not-allowed"
-                  : "hover:bg-sky-50"
+                loading ? "bg-gray-200 cursor-not-allowed" : "hover:bg-sky-50"
               }`}
             >
               {loading ? "Processing..." : "Donate Now"}
@@ -200,9 +209,7 @@ export default function Header() {
                 onClick={handleDonate}
                 disabled={loading}
                 className={`block py-2 mt-2 border border-[#58A3DC] text-[#58A3DC] rounded-lg font-semibold text-center w-full ${
-                  loading
-                    ? "bg-gray-100 cursor-not-allowed"
-                    : "hover:bg-sky-50"
+                  loading ? "bg-gray-100 cursor-not-allowed" : "hover:bg-sky-50"
                 }`}
               >
                 {loading ? "Processing..." : "Donate Now"}
@@ -213,7 +220,6 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* Spacer to prevent layout shift */}
       <div style={{ height: "60px" }}></div>
     </>
   );
