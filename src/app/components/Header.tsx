@@ -35,6 +35,13 @@ interface RazorpayConstructor {
   new (options: RazorpayOptions): RazorpayInstance;
 }
 
+// add explicit type for the order returned by your /api/razorpay
+interface RazorpayOrder {
+  id: string;
+  amount: number;
+  currency: string;
+}
+
 /* ------------------ ✅ Main Component ------------------ */
 export default function Header() {
   const [showNav, setShowNav] = useState(true);
@@ -67,7 +74,9 @@ export default function Header() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 500 }), // ₹500 donation
       });
-      const order = await res.json();
+
+      // explicitly type the parsed JSON to avoid implicit `any`
+      const order: RazorpayOrder = await res.json();
 
       const options: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
@@ -82,7 +91,6 @@ export default function Header() {
         theme: { color: "#58A3DC" },
       };
 
-      // ✅ Use a properly typed Razorpay constructor
       const RazorpayConstructor = (window as unknown as {
         Razorpay: RazorpayConstructor;
       }).Razorpay;
