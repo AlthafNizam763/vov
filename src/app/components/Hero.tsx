@@ -1,13 +1,21 @@
-// ./src/app/components/Hero.tsx
 "use client";
 
 import Image from "next/image";
 import { FaApplePay, FaGooglePay, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import Script from "next/script";
-import "./hero-animations.css"; // Animation CSS
+import "./hero-animations.css";
 
 /* ✅ Type Definitions */
+interface HeroData {
+  heading: string;
+  headline: string;
+  passage: string;
+  amountRaised: number;
+  amount: number;
+  image?: string;
+}
+
 interface RazorpayResponse {
   razorpay_payment_id: string;
   razorpay_order_id: string;
@@ -71,15 +79,48 @@ function CircularTextPlay() {
 /* ------------------ Hero Section ------------------ */
 export default function Hero() {
   const [loading, setLoading] = useState(false);
+  const [heroData, setHeroData] = useState<HeroData | null>(null);
+  const [amount, setAmount] = useState(120000);
 
-  // ✅ Razorpay Payment Handler (Fully Typed)
+  // ✅ define your total goal
+  const goal = heroData?.amount || 200000;
+
+  // ✅ Fetch Hero Data from API
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const res = await fetch("/api/hero", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load hero data");
+        const data = await res.json();
+        setHeroData(data);
+      } catch (err) {
+        console.error("❌ Error fetching hero data:", err);
+      }
+    };
+    fetchHeroData();
+  }, []);
+
+  // 💡 Random frontend animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomAmount =
+        Math.floor(Math.random() * (20000 - 10000 + 1)) + 10000;
+      setAmount(randomAmount);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // ✅ calculate percentage safely
+  const percentage = Math.min((amount / goal) * 100, 100);
+
+  // ✅ Razorpay Payment Handler
   const handlePayment = async (method: string): Promise<void> => {
     setLoading(true);
     try {
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 1000 }), // ₹1000 donation
+        body: JSON.stringify({ amount: 1000 }),
       });
       const order = await res.json();
 
@@ -113,7 +154,6 @@ export default function Hero() {
     <section className="relative bg-gray-50">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      {/* Background */}
       <div className="absolute inset-0">
         <Image
           src="/images/map.png"
@@ -143,7 +183,6 @@ export default function Hero() {
             empower lives together.
           </p>
 
-          {/* CTA */}
           <div
             className="mt-8 flex items-center justify-center lg:justify-start"
             style={{ gap: "2cm" }}
@@ -153,11 +192,7 @@ export default function Hero() {
               onClick={(e) => {
                 e.preventDefault();
                 const el = document.getElementById("about");
-                if (el) {
-                  el.scrollIntoView({ behavior: "smooth", block: "start" });
-                } else {
-                  window.location.hash = "#about";
-                }
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
               className="inline-block bg-[#4EBC73] hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition"
             >
@@ -170,38 +205,39 @@ export default function Hero() {
         {/* Right Card */}
         <div className="flex justify-center lg:justify-end animate-slide-up">
           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full relative">
-            <div className="absolute top-0 right-0 h-full w-4 bg-[#4EBC73] rounded-tr-2xl rounded-br-2xl z-0"></div>
-            <div className="absolute bottom-0 right-0 w-1/2 h-4 bg-[#4EBC73] rounded-bl-2xl z-0"></div>
+            <div className="absolute top-0 right-0 h-full w-4 bg-[#4EBC73] rounded-tr-2xl rounded-br-2xl"></div>
+            <div className="absolute bottom-0 right-0 w-1/2 h-4 bg-[#4EBC73] rounded-bl-2xl"></div>
 
             <div className="relative z-10">
               <span className="inline-block bg-[#4EBC73] text-white text-sm font-semibold px-4 py-1 rounded mb-4">
-                Mission NMMS
+                {heroData?.heading || "Mission NMMS"}
               </span>
 
               <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Freedom of Movement for the Differently Abled
+                {heroData?.headline ||
+                  "Freedom of Movement for the Differently Abled"}
               </h3>
 
               <p className="text-gray-600 text-sm mb-6">
-                We provide Neo Motion Mobility Scooters to differently-abled
-                individuals, empowering them with independence.
+                {heroData?.passage ||
+                  "We provide Neo Motion Mobility Scooters to differently-abled individuals, empowering them with independence."}
               </p>
 
-              {/* Progress bar */}
+              {/* ✅ Animated Progress bar */}
               <div className="mb-6 bg-[#F5F5F5] rounded-xl p-4">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-2 bg-[#4EBC73] rounded-full"
-                    style={{ width: "29%" }}
+                    className="h-2 bg-[#4EBC73] rounded-full transition-all duration-700 ease-out"
+                    style={{ width: `${percentage}%` }}
                   />
                 </div>
                 <div className="flex justify-between text-sm mt-2 text-gray-700">
-                  <span>₹120,000 Raised</span>
-                  <span>₹600,000 Goal</span>
+                  <span>₹{amount.toLocaleString()} Raised</span>
+                  <span>₹{goal.toLocaleString()} Goal</span>
                 </div>
               </div>
 
-              {/* ✅ Razorpay Buttons */}
+              {/* Razorpay Buttons */}
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => handlePayment("ApplePay")}
@@ -228,7 +264,6 @@ export default function Hero() {
                 </button>
               </div>
 
-              {/* Floating heart icon */}
               <span className="absolute -right-10 -top-10 bg-[#4EBC73] rounded-full p-4 shadow-lg flex items-center justify-center">
                 <Image
                   src="/images/charity.png"

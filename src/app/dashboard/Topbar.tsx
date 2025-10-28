@@ -8,7 +8,7 @@ export default function Topbar() {
       {/* Left side: Logo + Title */}
       <div className="flex items-center gap-3">
         {/* Circle logo */}
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-black">
+        <div className="w-10 h-10 flex items-center justify-center rounded-full">
           <Image
             src="/images/vov-logo.png"
             alt="Fenco Logo"
@@ -19,7 +19,7 @@ export default function Topbar() {
         </div>
         <div className="flex flex-col leading-tight">
           <span className="text-xs text-gray-500">Welcome Back</span>
-          <span className="text-base font-semibold text-gray-900">Bondi</span>
+          <span className="text-base font-semibold text-gray-900">Member</span>
         </div>
       </div>
 
@@ -27,7 +27,7 @@ export default function Topbar() {
       <div className="ml-auto flex items-center gap-4">
         {/* Avatar */}
         <div className="w-9 h-9 flex items-center justify-center rounded-full bg-black text-white font-semibold">
-          B
+          M
         </div>
       </div>
     </header>

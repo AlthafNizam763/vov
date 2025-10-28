@@ -30,7 +30,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/app/models/Campaign.js", "src/app/models/Hero.js", "src/app/models/Program.js", "src/app/models/Team.js"  ],
   "exclude": [
     "node_modules"
   ]
