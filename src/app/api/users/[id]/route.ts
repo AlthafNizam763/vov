@@ -3,15 +3,11 @@ import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
-// ✅ Properly type the context param used by route handlers
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
 // 🟢 GET — Get one user by ID
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
 
@@ -48,7 +44,10 @@ interface UpdateData {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     const { name, email, role, password } = await request.json();
@@ -94,7 +93,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
 
