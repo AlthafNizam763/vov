@@ -79,8 +79,12 @@ function EditUserInner() {
 
         if (!res.ok) throw new Error(data.message || "Failed to fetch user");
         setUser(data.user);
-      } catch (error: any) {
-        console.error("Failed to load user:", error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Failed to load user:", error.message);
+        } else {
+          console.error("An unknown error occurred:", error);
+        }
         toast.error("Failed to load user details.");
       }
     };
@@ -130,8 +134,12 @@ function EditUserInner() {
 
       toast.success("✅ User updated successfully!");
       setTimeout(() => router.push("/dashboard/user-manager"), 1500);
-    } catch (error: any) {
-      console.error("Failed to update user:", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Failed to update user:", error.message);
+      } else {
+        console.error("An unknown error occurred:", error);
+      }
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);

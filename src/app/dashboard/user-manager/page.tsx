@@ -27,8 +27,12 @@ export default function UserManager() {
         const res = await fetch("/api/users");
         const data = await res.json();
         setUsers(data.users || []);
-      } catch (error: any) {
-        console.error("Failed to fetch users:", error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Failed to fetch users:", error.message);
+        } else {
+          console.error("An unknown error occurred while fetching users:", error);
+        }
         toast.error("Failed to load users.");
       } finally {
         setLoading(false);
@@ -50,8 +54,12 @@ export default function UserManager() {
 
       toast.success("✅ User deleted successfully!");
       setUsers((prevUsers) => prevUsers.filter((u) => u._id !== id));
-    } catch (error: any) {
-      console.error("Failed to delete user:", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Failed to delete user:", error.message);
+      } else {
+        console.error("An unknown error occurred while deleting user:", error);
+      }
       toast.error("Something went wrong.");
     } finally {
       setConfirmDelete(null);
