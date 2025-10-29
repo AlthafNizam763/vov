@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"; // ✅ Import bcrypt
 // 🔹 GET — Get one user by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const client = await clientPromise;
@@ -37,7 +37,7 @@ interface UpdateData {
 // 🔹 PUT — Update a user by ID
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { name, email, role, password } = await request.json();
@@ -53,7 +53,7 @@ export async function PUT(
     const db = client.db(process.env.MONGODB_DB);
 
     // Build update object
-    const updateData: UpdateData = {
+     const updateData: UpdateData = {
       name,
       email,
       role,
@@ -85,7 +85,7 @@ export async function PUT(
 // 🔹 DELETE — Delete a user by ID
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const client = await clientPromise;
