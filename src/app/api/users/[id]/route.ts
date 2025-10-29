@@ -3,13 +3,18 @@ import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
+// ✅ Properly type the context param used by route handlers
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
 // 🟢 GET — Get one user by ID
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: Request, context: RouteContext) {
   try {
-    const id = params.id;
+    const id = context.params.id;
+
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
@@ -17,7 +22,7 @@ export async function GET(
       .collection("users")
       .findOne(
         { _id: new ObjectId(id) },
-        { projection: { password: 0 } } // Exclude password
+        { projection: { password: 0 } } // exclude password
       );
 
     if (!user)
@@ -33,6 +38,7 @@ export async function GET(
   }
 }
 
+// ✅ Interface for updating user data
 interface UpdateData {
   name: string;
   email: string;
@@ -41,13 +47,10 @@ interface UpdateData {
   password?: string;
 }
 
-// 🟢 PUT — Update a user by ID
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// 🟢 PUT — Update user by ID
+export async function PUT(request: Request, context: RouteContext) {
   try {
-    const id = params.id;
+    const id = context.params.id;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -91,12 +94,10 @@ export async function PUT(
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: Request, context: RouteContext) {
   try {
-    const id = params.id;
+    const id = context.params.id;
+
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
