@@ -37,7 +37,7 @@ interface UpdateData {
 // 🔹 PUT — Update a user by ID
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { name, email, role, password } = await request.json();
@@ -85,7 +85,7 @@ export async function PUT(
 // 🔹 DELETE — Delete a user by ID
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const client = await clientPromise;
