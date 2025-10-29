@@ -101,6 +101,12 @@ function EditUserInner() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 💡 Add a guard clause to ensure user is not null
+    if (!user) {
+      toast.error("User data is not loaded yet.");
+      return;
+    }
+
     // Stop submit if invalid password
     if (passwordError) {
       toast.error("Please fix password requirements.");
