@@ -11,9 +11,9 @@ interface RouteContext {
 }
 
 // 🟢 GET — Get one user by ID
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
-    const id = context.params.id;
+    const id = params.id;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
@@ -48,9 +48,9 @@ interface UpdateData {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: Request, context: RouteContext) {
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const id = context.params.id;
+    const id = params.id;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -94,9 +94,9 @@ export async function PUT(request: Request, context: RouteContext) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: Request, context: RouteContext) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
-    const id = context.params.id;
+    const id = params.id;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
