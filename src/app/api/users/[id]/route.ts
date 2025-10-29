@@ -1,25 +1,26 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
+// 👇 Create a common context type
+interface Context {
+  params: {
+    id: string;
+  };
+}
+
 // 🟢 GET — Get one user by ID
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, { params }: Context) {
   try {
-    const id = params.id;
+    const { id } = params;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
     const user = await db
       .collection("users")
-      .findOne(
-        { _id: new ObjectId(id) },
-        { projection: { password: 0 } } // exclude password
-      );
+      .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
 
     if (!user)
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -44,12 +45,9 @@ interface UpdateData {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: Context) {
   try {
-    const id = params.id;
+    const { id } = params;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -93,12 +91,9 @@ export async function PUT(
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, { params }: Context) {
   try {
-    const id = params.id;
+    const { id } = params;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
