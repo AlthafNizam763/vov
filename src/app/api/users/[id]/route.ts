@@ -3,17 +3,10 @@ import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
-// Define context type for dynamic route params
-type RouteParams = {
-  params: {
-    id: string;
-  };
-};
-
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, context: RouteParams) {
+export async function GET(_request: NextRequest, { params }: { params: Record<string, string> }) {
   try {
-    const { id } = context.params;
+    const id = params.id;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
@@ -36,19 +29,10 @@ export async function GET(_request: NextRequest, context: RouteParams) {
   }
 }
 
-// ✅ Interface for updating user data
-interface UpdateData {
-  name: string;
-  email: string;
-  role: string;
-  updatedAt: Date;
-  password?: string;
-}
-
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, context: RouteParams) {
+export async function PUT(request: NextRequest, { params }: { params: Record<string, string> }) {
   try {
-    const { id } = context.params;
+    const id = params.id;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -61,7 +45,13 @@ export async function PUT(request: NextRequest, context: RouteParams) {
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
-    const updateData: UpdateData = {
+    const updateData: {
+      name: string;
+      email: string;
+      role: string;
+      updatedAt: Date;
+      password?: string;
+    } = {
       name,
       email,
       role,
@@ -92,9 +82,9 @@ export async function PUT(request: NextRequest, context: RouteParams) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, context: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: { params: Record<string, string> }) {
   try {
-    const { id } = context.params;
+    const id = params.id;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
