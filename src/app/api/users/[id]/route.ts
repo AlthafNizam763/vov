@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"; // ✅ Import bcrypt
 // 🔹 GET — Get one user by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   try {
     const client = await clientPromise;
@@ -14,7 +14,7 @@ export async function GET(
 
     const user = await db
       .collection("users")
-      .findOne({ _id: new ObjectId(params.id) }, { projection: { password: 0 } }); // Exclude password
+      .findOne({ _id: new ObjectId(context.params.id) }, { projection: { password: 0 } }); // Exclude password
 
     if (!user)
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -37,7 +37,7 @@ interface UpdateData {
 // 🔹 PUT — Update a user by ID
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   try {
     const { name, email, role, password } = await request.json();
@@ -67,7 +67,7 @@ export async function PUT(
     }
 
     const result = await db.collection("users").updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(context.params.id) },
       { $set: updateData }
     );
 
@@ -85,7 +85,7 @@ export async function PUT(
 // 🔹 DELETE — Delete a user by ID
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   try {
     const client = await clientPromise;
@@ -93,7 +93,7 @@ export async function DELETE(
 
     const result = await db
       .collection("users")
-      .deleteOne({ _id: new ObjectId(params.id) });
+      .deleteOne({ _id: new ObjectId(context.params.id) });
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
