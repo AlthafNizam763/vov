@@ -42,7 +42,7 @@ export default function SiteUpdate() {
   const [team, setTeam] = useState<any[]>([]);
   const [newTeamMember, setNewTeamMember] = useState({
     name: "",
-    Description: "",
+    bio: "",
     image: null as File | null,
   });
 
@@ -166,7 +166,7 @@ export default function SiteUpdate() {
 
     const formData = new FormData();
     formData.append("name", newTeamMember.name);
-    formData.append("Description", newTeamMember.Description);
+    formData.append("bio", newTeamMember.bio);
     if (newTeamMember.image) formData.append("image", newTeamMember.image);
 
     const res = await fetch("/api/team", {
@@ -176,7 +176,7 @@ export default function SiteUpdate() {
 
     const added = await res.json();
     setTeam((prev) => [...prev, added]);
-    setNewTeamMember({ name: "", Description: "", image: null });
+    setNewTeamMember({ name: "", bio: "", image: null });
   };
 
   const handleDeleteTeamMember = async (id: string) => {
@@ -314,7 +314,7 @@ export default function SiteUpdate() {
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Our Team</h2>
                 <form onSubmit={handleAddTeamMember} className="space-y-3 mb-6 text-gray-900">
                   <input type="text" placeholder="Name" value={newTeamMember.name} onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <textarea placeholder="Description" value={newTeamMember.Description} onChange={(e) => setNewTeamMember({ ...newTeamMember, Description: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
+                  <textarea placeholder="Bio" value={newTeamMember.bio} onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
                   <input type="file" accept="image/*" onChange={(e) => setNewTeamMember({ ...newTeamMember, image: e.target.files ? e.target.files[0] : null })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
                   <button className="bg-[#2297F2] text-white py-2 rounded-lg w-full hover:bg-blue-600">➕ Add Team Member</button>
                 </form>
@@ -324,7 +324,7 @@ export default function SiteUpdate() {
                     <thead className="bg-gray-100">
                       <tr>
                         <th className="p-3 text-left">Name</th>
-                        <th className="p-3 text-left">Description</th>
+                        <th className="p-3 text-left">Bio</th>
                         <th className="p-3 text-left">Image</th>
                         <th className="p-3 text-center">Action</th>
                       </tr>
@@ -333,7 +333,7 @@ export default function SiteUpdate() {
                       {team.map((t) => (
                         <tr key={t._id} className="border-t">
                           <td className="p-3">{t.name}</td>
-                          <td className="p-3">{t.Description}</td>
+                          <td className="p-3">{t.bio}</td>
                           <td className="p-3">{t.image && <img src={t.image} alt={t.name} className="w-12 h-12 object-cover rounded" />}</td>
                           <td className="p-3 text-center">
                             <button onClick={() => handleDeleteTeamMember(t._id)} className="text-red-500 hover:underline">🗑 Delete</button>

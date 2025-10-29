@@ -30,7 +30,6 @@ export async function POST(req: Request) {
       const formData = await req.formData();
 
       newMember.name = formData.get("name") as string;
-      newMember.role = formData.get("role") as string;
       newMember.bio = formData.get("bio") as string;
 
       const imageFile = formData.get("image") as File | null;
