@@ -4,7 +4,10 @@ import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
 // 🟢 GET — Get one user by ID
-export async function GET(request: Request, { params }: any) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     const client = await clientPromise;
@@ -39,7 +42,10 @@ interface UpdateData {
 }
 
 // 🟢 PUT — Update a user by ID
-export async function PUT(request: Request, { params }: any) {
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     const { name, email, role, password } = await request.json();
@@ -85,7 +91,10 @@ export async function PUT(request: Request, { params }: any) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(request: Request, { params }: any) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     const client = await clientPromise;
