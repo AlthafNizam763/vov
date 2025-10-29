@@ -11,7 +11,7 @@ interface RouteContext {
 }
 
 // 🟢 GET — Get one user by ID
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
 
@@ -48,7 +48,7 @@ interface UpdateData {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: Request, { params }: RouteContext) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
     const { name, email, role, password } = await request.json();
@@ -94,7 +94,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: Request, { params }: RouteContext) {
+export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
 
