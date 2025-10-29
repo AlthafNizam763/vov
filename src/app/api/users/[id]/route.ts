@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }: { params: Record<string, string> }) {
+export async function GET(_request: NextRequest, { params }) {
   try {
     const id = params.id;
 
@@ -30,7 +30,7 @@ export async function GET(_request: NextRequest, { params }: { params: Record<st
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }: { params: Record<string, string> }) {
+export async function PUT(request: NextRequest, { params }) {
   try {
     const id = params.id;
     const { name, email, role, password } = await request.json();
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest, { params }: { params: Record<str
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }: { params: Record<string, string> }) {
+export async function DELETE(_request: NextRequest, { params }) {
   try {
     const id = params.id;
 
