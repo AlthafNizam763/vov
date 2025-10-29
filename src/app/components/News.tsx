@@ -31,13 +31,17 @@ export default function News() {
 
         // Keep only valid items that have passage + image
         const validData = data.filter(
-          (item: any) => item.passage || item.image || item.date
+          (item: NewsItem) => item.passage || item.image || item.date
         );
 
         setNews(validData);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("❌ Error fetching news:", err);
-        setError(err.message || "Something went wrong");
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred while fetching news.");
+        }
       } finally {
         setLoading(false);
       }

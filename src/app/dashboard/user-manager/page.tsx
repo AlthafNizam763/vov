@@ -1,13 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FaSearch, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
 import toast from "react-hot-toast";
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 export default function UserManager() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
@@ -19,7 +27,8 @@ export default function UserManager() {
         const res = await fetch("/api/users");
         const data = await res.json();
         setUsers(data.users || []);
-      } catch (error) {
+      } catch (error: any) {
+        console.error("Failed to fetch users:", error.message);
         toast.error("Failed to load users.");
       } finally {
         setLoading(false);
@@ -40,8 +49,9 @@ export default function UserManager() {
       }
 
       toast.success("✅ User deleted successfully!");
-      setUsers(users.filter((u) => u._id !== id));
-    } catch (error) {
+      setUsers((prevUsers) => prevUsers.filter((u) => u._id !== id));
+    } catch (error: any) {
+      console.error("Failed to delete user:", error.message);
       toast.error("Something went wrong.");
     } finally {
       setConfirmDelete(null);
@@ -55,6 +65,8 @@ export default function UserManager() {
       user.email?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-[#F8F9FD] flex flex-col">
       <Topbar />
@@ -67,7 +79,7 @@ export default function UserManager() {
             <h1 className="text-3xl font-bold text-[#1E1E2F]">User Manager</h1>
             <button
               className="flex items-center gap-2 px-4 py-2 bg-[#2297F2] text-white rounded-lg shadow hover:bg-blue-600 transition"
-              onClick={() => (window.location.href = "/dashboard/user-manager/adduser")}
+              onClick={() => router.push("/dashboard/user-manager/adduser")}
             >
               <FaPlus /> Add User
             </button>
@@ -108,9 +120,7 @@ export default function UserManager() {
                       <td className="px-6 py-3 text-right flex justify-end gap-3">
                         <button
                           className="text-blue-500 hover:text-blue-700"
-                          onClick={() =>
-                            (window.location.href = `/dashboard/user-manager/edituser?id=${user._id}`)
-                          }
+                          onClick={() => router.push(`/dashboard/user-manager/edituser?id=${user._id}`)}
                         >
                           <FaEdit />
                         </button>

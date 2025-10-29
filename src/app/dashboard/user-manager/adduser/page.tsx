@@ -65,6 +65,7 @@ export default function AddUser() {
       toast.success(`✅ User added: ${data.user.name}`);
       setTimeout(() => router.push("/dashboard/user-manager"), 1500);
     } catch (error) {
+      console.error("Failed to add user:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

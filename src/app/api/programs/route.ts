@@ -5,6 +5,12 @@ import { ObjectId } from "mongodb";
 export const runtime = "nodejs";
 
 // 🟢 GET: fetch all programs
+interface Program {
+  passage?: string;
+  date?: string;
+  image?: string;
+}
+
 export async function GET() {
   try {
     const client = await clientPromise;
@@ -23,7 +29,7 @@ export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
 
-    let newProgram: any = {};
+    let newProgram: Program = {};
     let imageBase64 = "";
 
     // 🧩 Handle FormData (multipart)
@@ -43,7 +49,7 @@ export async function POST(req: Request) {
     // 🧩 Handle JSON (no image)
     else {
       const data = await req.json();
-      newProgram = data;
+      newProgram = data as Program;
     }
 
     const client = await clientPromise;

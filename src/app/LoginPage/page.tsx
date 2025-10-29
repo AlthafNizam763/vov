@@ -31,6 +31,7 @@ export default function GlassLogin() {
       setMessage("✅ Login successful! Redirecting...");
       setTimeout(() => router.push("/dashboard"), 1500);
     } catch (error) {
+      console.error("Login error:", error);
       setMessage("❌ Something went wrong. Try again.");
     }
   };

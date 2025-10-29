@@ -29,12 +29,26 @@ export default function EditUser() {
   );
 }
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface UpdateData {
+  name: string;
+  email: string;
+  role: string;
+  password?: string;
+}
+
 function EditUserInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const userId = searchParams?.get("id");
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // 👈 Toggle visibility
@@ -65,7 +79,8 @@ function EditUserInner() {
 
         if (!res.ok) throw new Error(data.message || "Failed to fetch user");
         setUser(data.user);
-      } catch (error) {
+      } catch (error: any) {
+        console.error("Failed to load user:", error.message);
         toast.error("Failed to load user details.");
       }
     };
@@ -91,7 +106,7 @@ function EditUserInner() {
     setLoading(true);
 
     try {
-      const updateData: any = {
+      const updateData: UpdateData = {
         name: user.name,
         email: user.email,
         role: user.role,
@@ -115,7 +130,8 @@ function EditUserInner() {
 
       toast.success("✅ User updated successfully!");
       setTimeout(() => router.push("/dashboard/user-manager"), 1500);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Failed to update user:", error.message);
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);

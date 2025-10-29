@@ -5,6 +5,12 @@ import { ObjectId } from "mongodb";
 export const runtime = "nodejs"; // Ensures this runs on the server
 
 // 🟢 GET — fetch all team members
+interface TeamMember {
+  name?: string;
+  bio?: string;
+  image?: string;
+}
+
 export async function GET() {
   try {
     const client = await clientPromise;
@@ -22,7 +28,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
-    let newMember: any = {};
+    let newMember: TeamMember = {};
     let imageBase64 = "";
 
     // Handle multipart/form-data (for image upload)
@@ -42,7 +48,7 @@ export async function POST(req: Request) {
     // Handle JSON (no image upload)
     else {
       const data = await req.json();
-      newMember = data;
+      newMember = data as TeamMember;
     }
 
     const client = await clientPromise;

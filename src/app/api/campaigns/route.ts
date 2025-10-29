@@ -4,6 +4,14 @@ import { ObjectId } from "mongodb";
 
 export const runtime = "nodejs";
 
+interface Campaign {
+  title?: string;
+  passage?: string;
+  amount?: string;
+  detail?: string;
+  image?: string;
+}
+
 // 🔹 GET all campaigns
 export async function GET() {
   try {
@@ -23,7 +31,7 @@ export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
 
-    let newCampaign: any = {};
+    let newCampaign: Campaign = {};
     let imageBase64 = "";
 
     // 🧩 If form data (with image)
@@ -45,7 +53,7 @@ export async function POST(req: Request) {
     // 🧩 If plain JSON (no image)
     else {
       const data = await req.json();
-      newCampaign = data;
+      newCampaign = data as Campaign;
     }
 
     const client = await clientPromise;

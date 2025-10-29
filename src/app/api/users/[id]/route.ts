@@ -26,6 +26,14 @@ export async function GET(
   }
 }
 
+interface UpdateData {
+  name: string;
+  email: string;
+  role: string;
+  updatedAt: Date;
+  password?: string;
+}
+
 // 🔹 PUT — Update a user by ID
 export async function PUT(
   request: Request,
@@ -45,7 +53,7 @@ export async function PUT(
     const db = client.db(process.env.MONGODB_DB);
 
     // Build update object
-    const updateData: any = {
+    const updateData: UpdateData = {
       name,
       email,
       role,

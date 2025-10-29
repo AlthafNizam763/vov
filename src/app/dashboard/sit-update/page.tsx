@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Sidebar from "../Sidebar";
 import Topbar from "../Topbar";
 
@@ -10,6 +11,30 @@ const NAV_ITEMS = [
   { key: "program", label: "Latest Program" },
   { key: "team", label: "Our Team" },
 ];
+
+// Types for our data
+interface Campaign {
+  _id: string;
+  title: string;
+  passage: string;
+  amount: string;
+  detail: string;
+  image?: string;
+}
+
+interface Program {
+  _id: string;
+  passage: string;
+  date: string;
+  image?: string;
+}
+
+interface TeamMember {
+  _id: string;
+  name: string;
+  bio: string;
+  image?: string;
+}
 
 export default function SiteUpdate() {
   const [activeSection, setActiveSection] = useState("hero");
@@ -21,7 +46,7 @@ export default function SiteUpdate() {
   const [heroAmount, setHeroAmount] = useState("");
 
   // CAMPAIGNS
-  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [newCampaign, setNewCampaign] = useState({
     title: "",
     passage: "",
@@ -31,7 +56,7 @@ export default function SiteUpdate() {
   });
 
   // PROGRAMS
-  const [programs, setPrograms] = useState<any[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
   const [newProgram, setNewProgram] = useState({
     passage: "",
     date: "",
@@ -39,7 +64,7 @@ export default function SiteUpdate() {
   });
 
   // TEAM
-  const [team, setTeam] = useState<any[]>([]);
+  const [team, setTeam] = useState<TeamMember[]>([]);
   const [newTeamMember, setNewTeamMember] = useState({
     name: "",
     bio: "",
@@ -258,7 +283,17 @@ export default function SiteUpdate() {
                         <tr key={c._id} className="border-t">
                           <td className="p-3">{c.title}</td>
                           <td className="p-3">{c.amount}</td>
-                          <td className="p-3">{c.image && <img src={c.image} alt={c.title} className="w-12 h-12 object-cover rounded" />}</td>
+                          <td className="p-3">
+                            {c.image && (
+                              <Image
+                                src={c.image}
+                                alt={c.title}
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 object-cover rounded"
+                              />
+                            )}
+                          </td>
                           <td className="p-3 text-center">
                             <button onClick={() => handleDeleteCampaign(c._id)} className="text-red-500 hover:underline">🗑 Delete</button>
                           </td>
@@ -296,7 +331,17 @@ export default function SiteUpdate() {
                         <tr key={p._id} className="border-t">
                           <td className="p-3">{p.passage}</td>
                           <td className="p-3">{p.date}</td>
-                          <td className="p-3">{p.image && <img src={p.image} alt="Program" className="w-12 h-12 object-cover rounded" />}</td>
+                          <td className="p-3">
+                            {p.image && (
+                              <Image
+                                src={p.image}
+                                alt="Program"
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 object-cover rounded"
+                              />
+                            )}
+                          </td>
                           <td className="p-3 text-center">
                             <button onClick={() => handleDeleteProgram(p._id)} className="text-red-500 hover:underline">🗑 Delete</button>
                           </td>
@@ -334,7 +379,17 @@ export default function SiteUpdate() {
                         <tr key={t._id} className="border-t">
                           <td className="p-3">{t.name}</td>
                           <td className="p-3">{t.bio}</td>
-                          <td className="p-3">{t.image && <img src={t.image} alt={t.name} className="w-12 h-12 object-cover rounded" />}</td>
+                          <td className="p-3">
+                            {t.image && (
+                              <Image
+                                src={t.image}
+                                alt={t.name}
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 object-cover rounded"
+                              />
+                            )}
+                          </td>
                           <td className="p-3 text-center">
                             <button onClick={() => handleDeleteTeamMember(t._id)} className="text-red-500 hover:underline">🗑 Delete</button>
                           </td>

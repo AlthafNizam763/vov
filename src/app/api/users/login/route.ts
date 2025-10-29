@@ -21,8 +21,11 @@ export async function POST(req: Request) {
     if (!isPasswordValid)
       return NextResponse.json({ message: "Invalid password" }, { status: 401 });
 
-    // ✅ Remove password before returning
-    const { password: _, ...userWithoutPassword } = user;
+    // ✅ Create a new object without the password to send to the client
+    const userWithoutPassword = {
+      ...user,
+    };
+    delete (userWithoutPassword as { password?: string }).password;
 
     return NextResponse.json({
       message: "Login successful",
