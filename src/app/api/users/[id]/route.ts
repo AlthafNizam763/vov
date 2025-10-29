@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
-import bcrypt from "bcryptjs"; // ✅ Import bcrypt
+import bcrypt from "bcryptjs";
 
-// 🔹 GET — Get one user by ID
-export async function GET(
-  request: Request,
-  context: { params: Record<string, string> }
-) {
+// 🟢 GET — Get one user by ID
+export async function GET(request: Request, { params }: any) {
   try {
-    const { id } = context.params;
+    const id = params.id;
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
@@ -41,13 +38,10 @@ interface UpdateData {
   password?: string;
 }
 
-// 🔹 PUT — Update a user by ID
-export async function PUT(
-  request: Request,
-  context: { params: Record<string, string> }
-) {
+// 🟢 PUT — Update a user by ID
+export async function PUT(request: Request, { params }: any) {
   try {
-    const { id } = context.params;
+    const id = params.id;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -67,7 +61,6 @@ export async function PUT(
       updatedAt: new Date(),
     };
 
-    // ✅ Hash password only if provided
     if (password && password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(password.trim(), 10);
       updateData.password = hashedPassword;
@@ -91,13 +84,10 @@ export async function PUT(
   }
 }
 
-// 🔹 DELETE — Delete a user by ID
-export async function DELETE(
-  request: Request,
-  context: { params: Record<string, string> }
-) {
+// 🟢 DELETE — Delete a user by ID
+export async function DELETE(request: Request, { params }: any) {
   try {
-    const { id } = context.params;
+    const id = params.id;
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
