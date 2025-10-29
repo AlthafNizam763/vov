@@ -3,10 +3,17 @@ import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
+// Define context type for dynamic route params
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
+
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }: any) {
+export async function GET(_request: NextRequest, context: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = context.params;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
@@ -15,8 +22,9 @@ export async function GET(_request: NextRequest, { params }: any) {
       .collection("users")
       .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
 
-    if (!user)
+    if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ user });
   } catch (error) {
@@ -28,10 +36,19 @@ export async function GET(_request: NextRequest, { params }: any) {
   }
 }
 
+// ✅ Interface for updating user data
+interface UpdateData {
+  name: string;
+  email: string;
+  role: string;
+  updatedAt: Date;
+  password?: string;
+}
+
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }: any) {
+export async function PUT(request: NextRequest, context: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = context.params;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -44,7 +61,7 @@ export async function PUT(request: NextRequest, { params }: any) {
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
 
-    const updateData: any = {
+    const updateData: UpdateData = {
       name,
       email,
       role,
@@ -75,9 +92,9 @@ export async function PUT(request: NextRequest, { params }: any) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }: any) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = context.params;
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);
