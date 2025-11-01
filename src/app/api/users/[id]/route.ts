@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import clientPromise from "../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
+export const runtime = "nodejs";
 
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }) {
+export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+    }
 
+    if (!process.env.MONGODB_URI) {
+      return NextResponse.json(
+        { message: "Database not configured. Set MONGODB_URI." },
+        { status: 503 }
+      );
+    }
+
+    const { default: clientPromise } = await import("../../../../lib/mongodb");
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+    const db = process.env.MONGODB_DB ? client.db(process.env.MONGODB_DB) : client.db();
 
     const user = await db
       .collection("users")
@@ -30,9 +41,13 @@ export async function GET(_request: NextRequest, { params }) {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+    }
+
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -42,8 +57,16 @@ export async function PUT(request: NextRequest, { params }) {
       );
     }
 
+    if (!process.env.MONGODB_URI) {
+      return NextResponse.json(
+        { message: "Database not configured. Set MONGODB_URI." },
+        { status: 503 }
+      );
+    }
+
+    const { default: clientPromise } = await import("../../../../lib/mongodb");
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+    const db = process.env.MONGODB_DB ? client.db(process.env.MONGODB_DB) : client.db();
 
     const updateData: {
       name: string;
@@ -82,12 +105,23 @@ export async function PUT(request: NextRequest, { params }) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }) {
+export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+    }
 
+    if (!process.env.MONGODB_URI) {
+      return NextResponse.json(
+        { message: "Database not configured. Set MONGODB_URI." },
+        { status: 503 }
+      );
+    }
+
+    const { default: clientPromise } = await import("../../../../lib/mongodb");
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+    const db = process.env.MONGODB_DB ? client.db(process.env.MONGODB_DB) : client.db();
 
     const result = await db
       .collection("users")
