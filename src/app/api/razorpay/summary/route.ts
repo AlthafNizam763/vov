@@ -1,33 +1,28 @@
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
 
-// 🔹 Extend the Razorpay class type safely
-interface RazorpayWithBalance extends Razorpay {
-  balance: {
-    fetch: () => Promise<{ entity: string; currency: string; balance: number }>;
-  };
-}
+type RazorpayBalance = {
+  entity: string;
+  currency: string;
+  balance: number;
+};
 
-// Define Razorpay types
 type RazorpayPayment = {
   id: string;
   amount: number;
   amount_refunded: number;
-  status: "created" | "authorized" | "captured" | "refunded" | "failed";
+  status: string;
 };
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
-}) as RazorpayWithBalance;
+});
 
 export async function GET() {
   try {
-    // 🔹 Fetch account balance
-    const balance = await razorpay.balance.fetch();
-
-    // 🔹 Fetch recent payments
-    const payments = await razorpay.payments.all({ count: 100 });
+    const balance = (await (razorpay as any).balance.fetch()) as RazorpayBalance;
+    const payments = await (razorpay as any).payments.all({ count: 100 });
     const items = payments.items as RazorpayPayment[];
 
     let totalIncome = 0;
@@ -43,11 +38,8 @@ export async function GET() {
       totalIncome: totalIncome / 100,
       totalOutcome: totalOutcome / 100,
     });
-  } catch (err: unknown) {
+  } catch (err) {
     console.error("Error fetching Razorpay summary:", err);
-    return NextResponse.json(
-      { error: "Failed to fetch summary" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch summary" }, { status: 500 });
   }
 }
