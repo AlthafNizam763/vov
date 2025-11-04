@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
-// ✅ Ensure runtime is Node.js
 export const runtime = "nodejs";
 
-// ✅ Connect to MongoDB
+// 🟢 MongoDB connection helper
 async function connectToDb() {
   if (!process.env.MONGODB_URI) {
     throw new Error("❌ Missing MONGODB_URI in environment variables");
@@ -17,13 +16,10 @@ async function connectToDb() {
   return client.db(dbName);
 }
 
-// 🟢 GET — Get user by ID
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+// 🟢 GET — Fetch user by ID
+export async function GET(_request: NextRequest, context: any) {
   try {
-    const { id } = params;
+    const id = context.params.id;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
@@ -41,34 +37,14 @@ export async function GET(
     return NextResponse.json({ user });
   } catch (error) {
     console.error("Error fetching user:", error);
-    return NextResponse.json(
-      { message: "Failed to fetch user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to fetch user" }, { status: 500 });
   }
 }
 
-// ✅ Interface for updates
-interface UpdateData {
-  name: string;
-  email: string;
-  role: string;
-  updatedAt: Date;
-  password?: string;
-}
-
 // 🟢 PUT — Update user by ID
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, context: any) {
   try {
-    const { id } = params;
-
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
-    }
-
+    const id = context.params.id;
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -80,7 +56,13 @@ export async function PUT(
 
     const db = await connectToDb();
 
-    const updateData: UpdateData = {
+    const updateData: {
+      name: string;
+      email: string;
+      role: string;
+      updatedAt: Date;
+      password?: string;
+    } = {
       name,
       email,
       role,
@@ -103,30 +85,21 @@ export async function PUT(
     return NextResponse.json({ message: "User updated successfully" });
   } catch (error) {
     console.error("Error updating user:", error);
-    return NextResponse.json(
-      { message: "Failed to update user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to update user" }, { status: 500 });
   }
 }
 
 // 🟢 DELETE — Delete user by ID
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, context: any) {
   try {
-    const { id } = params;
+    const id = context.params.id;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
     const db = await connectToDb();
-
-    const result = await db
-      .collection("users")
-      .deleteOne({ _id: new ObjectId(id) });
+    const result = await db.collection("users").deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -135,9 +108,6 @@ export async function DELETE(
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Error deleting user:", error);
-    return NextResponse.json(
-      { message: "Failed to delete user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to delete user" }, { status: 500 });
   }
 }
