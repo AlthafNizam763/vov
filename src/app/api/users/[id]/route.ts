@@ -1,29 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
+
 export const runtime = "nodejs";
 
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
+
+async function connectToDb() {
+  if (!process.env.MONGODB_URI) {
+    throw new Error("Database not configured. Set MONGODB_URI.");
+  }
+  const { default: clientPromise } = await import("../../../../lib/mongodb");
+  const client = await clientPromise;
+  return process.env.MONGODB_DB
+    ? client.db(process.env.MONGODB_DB)
+    : client.db();
+}
+
 // 🟢 GET — Get one user by ID
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
 
-    if (!process.env.MONGODB_URI) {
-      return NextResponse.json(
-        { message: "Database not configured. Set MONGODB_URI." },
-        { status: 503 }
-      );
-    }
-
-    const { default: clientPromise } = await import("../../../../lib/mongodb");
-    const client = await clientPromise;
-    const db = process.env.MONGODB_DB ? client.db(process.env.MONGODB_DB) : client.db();
+    const db = await connectToDb();
 
     const user = await db
       .collection("users")
@@ -35,6 +41,10 @@ export async function GET(
 
     return NextResponse.json({ user });
   } catch (error) {
+    if (error instanceof Error && error.message.includes("Database not configured")) {
+      return NextResponse.json({ message: error.message }, { status: 503 });
+    }
+
     console.error("Error fetching user:", error);
     return NextResponse.json(
       { message: "Failed to fetch user" },
@@ -44,10 +54,7 @@ export async function GET(
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -63,16 +70,7 @@ export async function PUT(
       );
     }
 
-    if (!process.env.MONGODB_URI) {
-      return NextResponse.json(
-        { message: "Database not configured. Set MONGODB_URI." },
-        { status: 503 }
-      );
-    }
-
-    const { default: clientPromise } = await import("../../../../lib/mongodb");
-    const client = await clientPromise;
-    const db = process.env.MONGODB_DB ? client.db(process.env.MONGODB_DB) : client.db();
+    const db = await connectToDb();
 
     const updateData: {
       name: string;
@@ -102,6 +100,10 @@ export async function PUT(
 
     return NextResponse.json({ message: "User updated successfully" });
   } catch (error) {
+    if (error instanceof Error && error.message.includes("Database not configured")) {
+      return NextResponse.json({ message: error.message }, { status: 503 });
+    }
+
     console.error("Error updating user:", error);
     return NextResponse.json(
       { message: "Failed to update user" },
@@ -111,26 +113,14 @@ export async function PUT(
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, { params }: RouteContext) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
 
-    if (!process.env.MONGODB_URI) {
-      return NextResponse.json(
-        { message: "Database not configured. Set MONGODB_URI." },
-        { status: 503 }
-      );
-    }
-
-    const { default: clientPromise } = await import("../../../../lib/mongodb");
-    const client = await clientPromise;
-    const db = process.env.MONGODB_DB ? client.db(process.env.MONGODB_DB) : client.db();
+    const db = await connectToDb();
 
     const result = await db
       .collection("users")
@@ -142,6 +132,10 @@ export async function DELETE(
 
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (error) {
+    if (error instanceof Error && error.message.includes("Database not configured")) {
+      return NextResponse.json({ message: error.message }, { status: 503 });
+    }
+
     console.error("Error deleting user:", error);
     return NextResponse.json(
       { message: "Failed to delete user" },
