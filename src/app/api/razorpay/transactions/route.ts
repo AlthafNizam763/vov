@@ -1,5 +1,23 @@
 import Razorpay from "razorpay";
 
+// 🔹 Define proper types for Razorpay responses
+type RazorpayPayment = {
+  id: string;
+  amount: number;
+  amount_refunded: number;
+  status: "created" | "authorized" | "captured" | "refunded" | "failed";
+  email?: string;
+  contact?: string;
+  method?: string;
+  created_at: number;
+};
+
+type RazorpayPaymentsResponse = {
+  entity: string;
+  count: number;
+  items: RazorpayPayment[];
+};
+
 export async function GET() {
   try {
     const razorpay = new Razorpay({
@@ -8,23 +26,25 @@ export async function GET() {
     });
 
     // 🔹 Fetch the latest 100 payments
-    const payments = await razorpay.payments.all({ count: 100 });
+    const payments = (await razorpay.payments.all({
+      count: 100,
+    })) as RazorpayPaymentsResponse;
 
     // 🔹 Calculate totals
     let totalIncome = 0;
-    const totalOutcome = 0; // not reassigned, so const ✅
+    const totalOutcome = 0;
 
-    payments.items.forEach((p: any) => {
-      if (p.status === "captured") totalIncome += p.amount / 100; // Razorpay uses paise
+    payments.items.forEach((p) => {
+      if (p.status === "captured") totalIncome += p.amount / 100; // paise → rupees
     });
 
     const totalBalance = totalIncome - totalOutcome;
 
     // 🔹 Format transactions
-    const transactions = payments.items.map((t: any) => ({
+    const transactions = payments.items.map((t) => ({
       id: t.id,
-      email: t.email,
-      contact: t.contact,
+      email: t.email || "N/A",
+      contact: t.contact || "N/A",
       amount: `₹${(t.amount / 100).toFixed(2)}`,
       status: t.status,
       method: t.method || "N/A",
@@ -39,7 +59,7 @@ export async function GET() {
       transactions,
     });
   } catch (err: unknown) {
-    console.error(err);
+    console.error("Error fetching transactions:", err);
     return Response.json(
       { success: false, error: "Failed to fetch transactions" },
       { status: 500 }
