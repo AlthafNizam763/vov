@@ -5,33 +5,25 @@ import bcrypt from "bcryptjs";
 export const runtime = "nodejs";
 
 async function connectToDb() {
-  // It's good practice to check for the database name as well.
-  if (!process.env.MONGODB_DB) {
-    throw new Error("Database not configured. Set MONGODB_DB.");
-  }
-
   if (!process.env.MONGODB_URI) {
     throw new Error("Database not configured. Set MONGODB_URI.");
   }
+
   const { default: clientPromise } = await import("../../../../lib/mongodb");
   const client = await clientPromise;
-  return process.env.MONGODB_DB
-    ? client.db(process.env.MONGODB_DB)
-    : client.db();
+  const dbName = process.env.MONGODB_DB || "admin";
+  return client.db(dbName);
 }
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+// ✅ The correct context type
+interface RouteContext {
+  params: { id: string };
+}
 
 // 🟢 GET — Get one user by ID
-export async function GET(
-  _request: NextRequest,
-  { params: paramsPromise }: RouteContext
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = await paramsPromise;
-
+    const { id } = params;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -48,26 +40,15 @@ export async function GET(
 
     return NextResponse.json({ user });
   } catch (error) {
-    if (error instanceof Error && error.message.includes("Database not configured")) {
-      return NextResponse.json({ message: error.message }, { status: 503 });
-    }
-
     console.error("Error fetching user:", error);
-    return NextResponse.json(
-      { message: "Failed to fetch user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to fetch user" }, { status: 500 });
   }
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(
-  request: NextRequest,
-  { params: paramsPromise }: RouteContext
-) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = await paramsPromise;
-
+    const { id } = params;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -75,10 +56,7 @@ export async function PUT(
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
-      return NextResponse.json(
-        { message: "All fields are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
     }
 
     const db = await connectToDb();
@@ -111,26 +89,15 @@ export async function PUT(
 
     return NextResponse.json({ message: "User updated successfully" });
   } catch (error) {
-    if (error instanceof Error && error.message.includes("Database not configured")) {
-      return NextResponse.json({ message: error.message }, { status: 503 });
-    }
-
     console.error("Error updating user:", error);
-    return NextResponse.json(
-      { message: "Failed to update user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to update user" }, { status: 500 });
   }
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(
-  _request: NextRequest,
-  { params: paramsPromise }: RouteContext
-) {
+export async function DELETE(_request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = await paramsPromise;
-
+    const { id } = params;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -147,14 +114,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (error) {
-    if (error instanceof Error && error.message.includes("Database not configured")) {
-      return NextResponse.json({ message: error.message }, { status: 503 });
-    }
-
     console.error("Error deleting user:", error);
-    return NextResponse.json(
-      { message: "Failed to delete user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to delete user" }, { status: 500 });
   }
 }
