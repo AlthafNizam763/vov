@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 export const runtime = "nodejs";
 
+// 🧩 Database connection
 async function connectToDb() {
   if (!process.env.MONGODB_URI) {
     throw new Error("Database not configured. Set MONGODB_URI.");
@@ -15,20 +16,21 @@ async function connectToDb() {
   return client.db(dbName);
 }
 
-// 🟢 GET — Get one user by ID
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ✅ The new correct context type for Next.js 15
+interface Context {
+  params: Promise<{ id: string }>;
+}
+
+// 🟢 GET — Fetch user by ID
+export async function GET(_req: NextRequest, context: Context) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
     const db = await connectToDb();
-
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
@@ -44,40 +46,34 @@ export async function GET(
   }
 }
 
-// 🟢 PUT — Update user by ID
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// 🟢 PUT — Update user
+export async function PUT(req: NextRequest, context: Context) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
-    const { name, email, role, password } = await request.json();
+    const { name, email, role, password } = await req.json();
 
     if (!name || !email || !role) {
-      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
     }
 
     const db = await connectToDb();
 
-    const updateData: {
-      name: string;
-      email: string;
-      role: string;
-      updatedAt: Date;
-      password?: string;
-    } = {
+    const updateData: any = {
       name,
       email,
       role,
       updatedAt: new Date(),
     };
 
-    if (password && password.trim() !== "") {
+    if (password?.trim()) {
       const hashedPassword = await bcrypt.hash(password.trim(), 10);
       updateData.password = hashedPassword;
     }
@@ -97,16 +93,13 @@ export async function PUT(
   }
 }
 
-// 🟢 DELETE — Delete user by ID
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// 🟢 DELETE — Delete user
+export async function DELETE(_req: NextRequest, context: Context) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
     const db = await connectToDb();
