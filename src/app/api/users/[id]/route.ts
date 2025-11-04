@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
-// ✅ Ensure runtime works on Vercel Node.js server
+// ✅ Ensure runtime is Node.js
 export const runtime = "nodejs";
 
-// ✅ Reusable MongoDB connection helper
+// ✅ Connect to MongoDB
 async function connectToDb() {
   if (!process.env.MONGODB_URI) {
     throw new Error("❌ Missing MONGODB_URI in environment variables");
@@ -17,21 +17,19 @@ async function connectToDb() {
   return client.db(dbName);
 }
 
-// ✅ Type for Next.js Route Context
-interface RouteContext {
-  params: { id: string };
-}
-
-// 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }: RouteContext) {
+// 🟢 GET — Get user by ID
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
+
     if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
     const db = await connectToDb();
-
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
@@ -50,7 +48,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
   }
 }
 
-// ✅ Interface for updating user data
+// ✅ Interface for updates
 interface UpdateData {
   name: string;
   email: string;
@@ -60,11 +58,15 @@ interface UpdateData {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
+
     if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
     const { name, email, role, password } = await request.json();
@@ -108,12 +110,16 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-// 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }: RouteContext) {
+// 🟢 DELETE — Delete user by ID
+export async function DELETE(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
+
     if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }
 
     const db = await connectToDb();
