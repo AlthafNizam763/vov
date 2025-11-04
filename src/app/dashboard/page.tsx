@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { Card, CardContent } from "./Card";
@@ -12,188 +13,80 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { FaCcVisa, FaCcMastercard } from "react-icons/fa";
-import { MdOutlineSimCard } from "react-icons/md";
-
-// Sample data
-const chartData = [
-  { name: "Jan", value: 400 },
-  { name: "Feb", value: 300 },
-  { name: "Mar", value: 500 },
-  { name: "Apr", value: 200 },
-  { name: "May", value: 700 },
-  { name: "Jun", value: 600 },
-];
 
 export default function Dashboard() {
+  const [data, setData] = useState({
+    totalBalance: 0,
+    totalIncome: 0,
+    totalOutcome: 0,
+    transactions: [],
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("/api/razorpay/transactions");
+      const json = await res.json();
+      if (json.success) setData(json);
+    };
+    fetchData();
+  }, []);
+
+  const chartData = data.transactions.slice(0, 6).map((t, i) => ({
+    name: `Tx-${i + 1}`,
+    value: parseFloat(t.amount.replace("₹", "")),
+  }));
+
   return (
     <div className="min-h-screen bg-[#F8F9FD] flex flex-col">
-      {/* Topbar */}
       <Topbar />
-
       <div className="flex flex-1">
-        {/* Sidebar */}
         <Sidebar />
-
-        {/* Main Dashboard */}
         <main className="flex-1 p-6">
-          {/* Title */}
           <h1 className="text-2xl font-bold text-[#1E1E2F] mb-6">Dashboard</h1>
 
-          {/* Stats Cards */}
+          {/* Stat Cards */}
           <div className="text-[#1E1E2F] grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <StatCard title="Total Balance" amount="₹632.000" icon="💰" />
-            <StatCard title="Total Income" amount="₹632.000" icon="👤" />
-            <StatCard title="Total Saving" amount="₹632.000" icon="💳" />
-            <StatCard title="Total Outcome" amount="₹632.000" icon="📉" />
+            <StatCard title="Total Balance" amount={`₹${data.totalBalance}`} icon="💰" />
+            <StatCard title="Total Income" amount={`₹${data.totalIncome}`} icon="📈" />
+            <StatCard title="Total Outcome" amount={`₹${data.totalOutcome}`} icon="📉" />
+            <StatCard title="Transactions" amount={data.transactions.length} icon="🧾" />
           </div>
 
-          {/* Analytics + Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            {/* Analytics */}
-            <div className="col-span-2 p-4 bg-white rounded-xl shadow-sm">
-              <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
-                Analytics
-              </h2>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#2297F2"
-                      strokeWidth={3}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Cards */}
-            <div className="p-4 bg-white rounded-xl shadow-sm">
-              <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
-                Cards
-              </h2>
-              <CreditCard
-                name="Jock Lewis"
-                number="1234567812345678"
-                type="Visa"
-              />
-              <CreditCard
-                name="Jock Lewis"
-                number="4321432143214321"
-                type="Mastercard"
-              />
+          {/* Analytics Section */}
+          <div className="p-4 bg-white rounded-xl shadow-sm mb-6">
+            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
+              Analytics
+            </h2>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="value" stroke="#2297F2" strokeWidth={3} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
           {/* Transactions */}
           <div className="p-4 bg-white rounded-xl shadow-sm">
-            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
-              Transaction
-            </h2>
+            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">Transactions</h2>
             <div className="max-h-64 overflow-y-auto">
-              <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-                <TransactionRow
-                name="Adobe After Effect"
-                date="Sat, 20 Apr 2020"
-                amount="₹80.09"
-                status="Income"
-              />
-              <TransactionRow
-                name="McDonald's"
-                date="Fri, 19 Apr 2020"
-                amount="₹7.03"
-                status="Outcome"
-              />
-              {/* add more rows */}
+              {data.transactions.length > 0 ? (
+                data.transactions.map((t) => (
+                  <TransactionRow
+                    key={t.id}
+                    name={t.name}
+                    date={t.date}
+                    amount={t.amount}
+                    status={t.status}
+                  />
+                ))
+              ) : (
+                <p className="text-gray-500">No transactions found.</p>
+              )}
             </div>
           </div>
         </main>
@@ -219,50 +112,9 @@ function StatCard({ title, amount, icon }) {
   );
 }
 
-function CreditCard({ name, number, type }) {
-  const formattedNumber = number.replace(/(.{4})/g, "$1 ");
-
-  return (
-    <div className="relative w-[320px] h-[190px] bg-gradient-to-r from-blue-700 to-purple-900 text-white rounded-2xl shadow-xl p-5 mb-4 flex flex-col justify-between">
-      {/* Top Row */}
-      <div className="flex justify-between items-center">
-        {/* Chip */}
-        <div className="w-12 h-9 bg-yellow-300 rounded-md flex items-center justify-center shadow-inner">
-          <MdOutlineSimCard className="text-yellow-900" size={22} />
-        </div>
-        {/* Card Logo */}
-        <div className="text-3xl">
-          {type.toLowerCase() === "visa" ? (
-            <FaCcVisa />
-          ) : (
-            <FaCcMastercard />
-          )}
-        </div>
-      </div>
-
-      {/* Card Number */}
-      <div className="tracking-widest text-lg font-mono mt-2">
-        {formattedNumber}
-      </div>
-
-      {/* Cardholder Info */}
-      <div className="flex justify-between items-center mt-2 text-sm">
-        <div>
-          <p className="uppercase text-gray-300">Card Holder</p>
-          <p className="text-base font-semibold">{name}</p>
-        </div>
-        <div>
-          <p className="uppercase text-gray-300">Type</p>
-          <p className="text-base font-semibold">{type}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function TransactionRow({ name, date, amount, status }) {
   return (
-    <div className="flex justify-between items-center border-b py-3 ">
+    <div className="flex justify-between items-center border-b py-3">
       <div>
         <p className="font-medium text-[#1E1E2F]">{name}</p>
         <p className="text-sm text-gray-500">{date}</p>
@@ -273,7 +125,7 @@ function TransactionRow({ name, date, amount, status }) {
           className={`px-3 py-1 rounded-full text-xs ${
             status === "Income"
               ? "bg-green-100 text-green-600"
-              : "bg-red-100 text-red-600"
+              : "bg-yellow-100 text-yellow-600"
           }`}
         >
           {status}
