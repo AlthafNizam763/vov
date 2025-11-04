@@ -5,6 +5,11 @@ import bcrypt from "bcryptjs";
 export const runtime = "nodejs";
 
 async function connectToDb() {
+  // It's good practice to check for the database name as well.
+  if (!process.env.MONGODB_DB) {
+    throw new Error("Database not configured. Set MONGODB_DB.");
+  }
+
   if (!process.env.MONGODB_URI) {
     throw new Error("Database not configured. Set MONGODB_URI.");
   }
@@ -15,11 +20,12 @@ async function connectToDb() {
     : client.db();
 }
 
+type RouteParams = {
+  params: { id: string };
+};
+
 // 🟢 GET — Get one user by ID
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -51,10 +57,7 @@ export async function GET(
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -113,10 +116,7 @@ export async function PUT(
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
