@@ -1,6 +1,13 @@
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
 
+// 🔹 Extend the Razorpay class type safely
+interface RazorpayWithBalance extends Razorpay {
+  balance: {
+    fetch: () => Promise<{ entity: string; currency: string; balance: number }>;
+  };
+}
+
 // Define Razorpay types
 type RazorpayPayment = {
   id: string;
@@ -9,21 +16,15 @@ type RazorpayPayment = {
   status: "created" | "authorized" | "captured" | "refunded" | "failed";
 };
 
-type RazorpayBalance = {
-  entity: string;
-  currency: string;
-  balance: number;
-};
-
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+}) as RazorpayWithBalance;
 
 export async function GET() {
   try {
-    // 🔹 Fetch balance
-    const balance = (await razorpay.balance.fetch()) as RazorpayBalance;
+    // 🔹 Fetch account balance
+    const balance = await razorpay.balance.fetch();
 
     // 🔹 Fetch recent payments
     const payments = await razorpay.payments.all({ count: 100 });
