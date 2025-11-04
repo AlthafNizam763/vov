@@ -14,8 +14,24 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// 🔹 Define types
+type Transaction = {
+  id: string;
+  name: string;
+  date: string;
+  amount: string; // example: "₹1200"
+  status: "Income" | "Outcome" | string;
+};
+
+type DashboardData = {
+  totalBalance: number;
+  totalIncome: number;
+  totalOutcome: number;
+  transactions: Transaction[];
+};
+
 export default function Dashboard() {
-  const [data, setData] = useState({
+  const [data, setData] = useState<DashboardData>({
     totalBalance: 0,
     totalIncome: 0,
     totalOutcome: 0,
@@ -49,14 +65,12 @@ export default function Dashboard() {
             <StatCard title="Total Balance" amount={`₹${data.totalBalance}`} icon="💰" />
             <StatCard title="Total Income" amount={`₹${data.totalIncome}`} icon="📈" />
             <StatCard title="Total Outcome" amount={`₹${data.totalOutcome}`} icon="📉" />
-            <StatCard title="Transactions" amount={data.transactions.length} icon="🧾" />
+            <StatCard title="Transactions" amount={data.transactions.length.toString()} icon="🧾" />
           </div>
 
           {/* Analytics Section */}
           <div className="p-4 bg-white rounded-xl shadow-sm mb-6">
-            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
-              Analytics
-            </h2>
+            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">Analytics</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
@@ -96,7 +110,15 @@ export default function Dashboard() {
 }
 
 /* Components */
-function StatCard({ title, amount, icon }) {
+function StatCard({
+  title,
+  amount,
+  icon,
+}: {
+  title: string;
+  amount: string;
+  icon: string;
+}) {
   return (
     <Card className="p-4 shadow-sm">
       <CardContent>
@@ -112,7 +134,17 @@ function StatCard({ title, amount, icon }) {
   );
 }
 
-function TransactionRow({ name, date, amount, status }) {
+function TransactionRow({
+  name,
+  date,
+  amount,
+  status,
+}: {
+  name: string;
+  date: string;
+  amount: string;
+  status: string;
+}) {
   return (
     <div className="flex justify-between items-center border-b py-3">
       <div>
