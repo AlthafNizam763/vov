@@ -1,7 +1,24 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Script from "next/script";
+
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayOptions {
+  key: string | undefined;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  theme: { color: string };
+}
 
 export default function Stats() {
   const stats = [
@@ -11,7 +28,6 @@ export default function Stats() {
     { label: "Projects Funded", value: "10M+" },
   ];
 
-  // 🪙 Razorpay Payment Function
   const handleDonate = async () => {
     try {
       const res = await fetch("/api/razorpay", { method: "POST" });
@@ -22,20 +38,23 @@ export default function Stats() {
         return;
       }
 
-      const options = {
+      const options: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: 10000, // 💰 Example: ₹500.00 (in paise)
+        amount: 50000, // ₹500
         currency: "INR",
         name: "Voice of the Voiceless",
         description: "General Donation",
         order_id: data.id,
-        handler: function (response: any) {
+        handler: (response: RazorpayResponse) => {
           alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
         },
         theme: { color: "#4EBC73" },
       };
 
-      const razor = new (window as any).Razorpay(options);
+      const RazorpayConstructor = (window as unknown as {
+        Razorpay: new (options: RazorpayOptions) => { open: () => void };
+      }).Razorpay;
+      const razor = new RazorpayConstructor(options);
       razor.open();
     } catch (err) {
       console.error("Error starting payment:", err);
@@ -45,15 +64,11 @@ export default function Stats() {
 
   return (
     <section id="stats" className="bg-white">
-      {/* Razorpay script */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      {/* Container for the white card */}
       <div className="max-w-6xl mx-auto px-6">
         <div className="relative">
-          {/* White floating card */}
           <div className="relative z-20 bg-white rounded-2xl shadow-2xl p-6 md:p-12 overflow-hidden">
-            {/* subtle wave background (behind content) */}
             <svg
               className="absolute inset-0 w-full h-full opacity-6 pointer-events-none z-0"
               xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +81,6 @@ export default function Stats() {
               </g>
             </svg>
 
-            {/* Content */}
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="md:max-w-2xl">
                 <p className="text-sm text-[#58A3DC] font-semibold">
@@ -84,10 +98,8 @@ export default function Stats() {
                 <button
                   onClick={handleDonate}
                   className="inline-flex items-center gap-2 bg-[#4EBC73] hover:bg-green-600 text-white px-5 py-3 rounded-md font-semibold shadow"
-                  aria-label="Donate now"
                 >
-                  Donate Now
-                  <span aria-hidden>❤</span>
+                  Donate Now ❤
                 </button>
               </div>
             </div>
@@ -95,7 +107,6 @@ export default function Stats() {
         </div>
       </div>
 
-      {/* Green band with stats */}
       <div className="w-full bg-[#86cfa2] -mt-12">
         <div className="max-w-6xl mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">

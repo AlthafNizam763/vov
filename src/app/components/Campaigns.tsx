@@ -19,11 +19,29 @@ type Campaign = {
   tag?: string;
 };
 
+// ✅ Define RazorpayResponse type
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+// ✅ Define RazorpayOptions type
+interface RazorpayOptions {
+  key: string | undefined;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  theme: { color: string };
+}
+
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🟢 Fetch campaigns
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
@@ -51,20 +69,22 @@ export default function Campaigns() {
         return;
       }
 
-      const options = {
+      const options: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: amount * 100, // paise
         currency: "INR",
         name: "Voice of the Voiceless",
         description: campaignName || "Donation Campaign",
         order_id: data.id,
-        handler: function (response: any) {
+        handler: function (response: RazorpayResponse) {
           alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
         },
         theme: { color: "#4EBC73" },
       };
 
-      const razor = new (window as any).Razorpay(options);
+      // ✅ Correctly type Razorpay
+      const RazorpayConstructor = (window as unknown as { Razorpay: new (options: RazorpayOptions) => { open: () => void } }).Razorpay;
+      const razor = new RazorpayConstructor(options);
       razor.open();
     } catch (err) {
       console.error("Error starting payment:", err);
@@ -118,7 +138,6 @@ export default function Campaigns() {
             return (
               <SwiperSlide key={c._id || c.title}>
                 <div className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
-                  {/* Image */}
                   <div className="relative h-48 w-full">
                     <Image
                       src={c.image || "/images/default.jpg"}
@@ -133,7 +152,6 @@ export default function Campaigns() {
                     )}
                   </div>
 
-                  {/* Content */}
                   <div className="p-6">
                     <h3 className="font-semibold text-lg mb-2 text-[#1D1D1D]">
                       {c.title || "Untitled Campaign"}
@@ -155,11 +173,10 @@ export default function Campaigns() {
                       />
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex gap-3">
                       <button
                         onClick={() =>
-                          handleDonate(goal / 10, c.title) // Example donation amount
+                          handleDonate(goal / 10, c.title)
                         }
                         className="flex-1 bg-[#4EBC73] text-white rounded-lg py-2 font-medium hover:bg-green-600"
                       >
