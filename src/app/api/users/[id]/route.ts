@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, RouteHandlerContext } from "next/server";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
@@ -15,15 +15,13 @@ async function connectToDb() {
   return client.db(dbName);
 }
 
-// ✅ The correct context type
-interface RouteContext {
-  params: { id: string };
-}
-
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }: RouteContext) {
+export async function GET(
+  _request: NextRequest,
+  context: RouteHandlerContext<{ id: string }>
+) {
   try {
-    const { id } = params;
+    const id = context.params.id;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -46,9 +44,12 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(
+  request: NextRequest,
+  context: RouteHandlerContext<{ id: string }>
+) {
   try {
-    const { id } = params;
+    const id = context.params.id;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -95,9 +96,12 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }: RouteContext) {
+export async function DELETE(
+  _request: NextRequest,
+  context: RouteHandlerContext<{ id: string }>
+) {
   try {
-    const { id } = params;
+    const id = context.params.id;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
