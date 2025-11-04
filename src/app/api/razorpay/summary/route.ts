@@ -1,6 +1,20 @@
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
 
+// Define Razorpay types
+type RazorpayPayment = {
+  id: string;
+  amount: number;
+  amount_refunded: number;
+  status: "created" | "authorized" | "captured" | "refunded" | "failed";
+};
+
+type RazorpayBalance = {
+  entity: string;
+  currency: string;
+  balance: number;
+};
+
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
@@ -9,15 +23,16 @@ const razorpay = new Razorpay({
 export async function GET() {
   try {
     // 🔹 Fetch balance
-    const balance = await razorpay.balance.fetch();
+    const balance = (await razorpay.balance.fetch()) as RazorpayBalance;
 
     // 🔹 Fetch recent payments
     const payments = await razorpay.payments.all({ count: 100 });
+    const items = payments.items as RazorpayPayment[];
 
     let totalIncome = 0;
     let totalOutcome = 0;
 
-    payments.items.forEach((p: any) => {
+    items.forEach((p) => {
       if (p.status === "captured") totalIncome += p.amount;
       if (p.status === "refunded") totalOutcome += p.amount_refunded;
     });
@@ -27,8 +42,11 @@ export async function GET() {
       totalIncome: totalIncome / 100,
       totalOutcome: totalOutcome / 100,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Error fetching Razorpay summary:", err);
-    return NextResponse.json({ error: "Failed to fetch summary" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch summary" },
+      { status: 500 }
+    );
   }
 }
