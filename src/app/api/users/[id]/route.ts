@@ -4,7 +4,10 @@ import bcrypt from "bcryptjs";
 export const runtime = "nodejs";
 
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -41,7 +44,10 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -105,7 +111,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
