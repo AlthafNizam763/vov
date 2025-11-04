@@ -4,12 +4,6 @@ import bcrypt from "bcryptjs";
 
 export const runtime = "nodejs";
 
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
 async function connectToDb() {
   if (!process.env.MONGODB_URI) {
     throw new Error("Database not configured. Set MONGODB_URI.");
@@ -22,7 +16,10 @@ async function connectToDb() {
 }
 
 // 🟢 GET — Get one user by ID
-export async function GET(_request: NextRequest, { params }: RouteContext) {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -54,7 +51,10 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 }
 
 // 🟢 PUT — Update user by ID
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -113,7 +113,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 }
 
 // 🟢 DELETE — Delete a user by ID
-export async function DELETE(_request: NextRequest, { params }: RouteContext) {
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
