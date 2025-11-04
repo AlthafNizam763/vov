@@ -1,4 +1,3 @@
-import Topbar from './components/Topbar'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Campaigns from './components/Campaigns'
@@ -15,7 +14,6 @@ import Footer from './components/Footer'
 export default function Page() {
   return (
     <>
-      <Topbar />
       <Header />
       <main>
         <Hero />

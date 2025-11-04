@@ -1,12 +1,13 @@
-// ./src/app/components/Header.tsx
 "use client";
 
 import Link from "next/link";
-import { AiFillHeart } from "react-icons/ai";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import TopBar from "./Topbar";
 import Script from "next/script";
+import React, { useEffect, useState } from "react";
+import { AiFillHeart } from "react-icons/ai";
+import { FaWhatsapp, FaInstagram, FaFacebookF } from "react-icons/fa";
+import { IoCall } from "react-icons/io5";
+import { MdEmail } from "react-icons/md";
 
 /* ------------------ ✅ Type Definitions ------------------ */
 interface RazorpayResponse {
@@ -26,7 +27,6 @@ interface RazorpayOptions {
   theme: { color: string };
 }
 
-/** ✅ Define a minimal Razorpay type instead of `any` */
 interface RazorpayInstance {
   open: () => void;
 }
@@ -35,7 +35,6 @@ interface RazorpayConstructor {
   new (options: RazorpayOptions): RazorpayInstance;
 }
 
-// add explicit type for the order returned by your /api/razorpay
 interface RazorpayOrder {
   id: string;
   amount: number;
@@ -75,7 +74,6 @@ export default function Header() {
         body: JSON.stringify({ amount: 500 }), // ₹500 donation
       });
 
-      // explicitly type the parsed JSON to avoid implicit `any`
       const order: RazorpayOrder = await res.json();
 
       const options: RazorpayOptions = {
@@ -114,10 +112,72 @@ export default function Header() {
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           showNav ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
         }`}
-        onClick={() => !showNav && setShowNav(true)}
-        style={{ cursor: !showNav ? "pointer" : "default" }}
       >
-        <TopBar />
+        {/* ✅ Top Bar */}
+        <div className="bg-[#58A3DC] text-white text-xs sm:text-sm">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center py-2 gap-2 sm:gap-0">
+            
+            {/* 📞 Contact info */}
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3 text-center sm:text-left">
+              {/* Phone */}
+              <a
+                href="tel:+918075873624"
+                className="flex items-center gap-1 hover:text-gray-200 transition-colors"
+              >
+                <IoCall className="text-base" />
+                <span className="text-[13px] sm:text-[14px]">
+                  +91 80758 73624
+                </span>
+              </a>
+
+              <span className="hidden sm:inline">|</span>
+
+              {/* Email */}
+              <a
+                href="mailto:info.voiceofthevoiceless1@gmail.com"
+                className="flex items-center gap-1 hover:text-gray-200 transition-colors break-all"
+              >
+                <MdEmail className="text-base" />
+                <span className="text-[13px] sm:text-[14px]">
+                  info.voiceofthevoiceless1@gmail.com
+                </span>
+              </a>
+            </div>
+
+            {/* 🌐 Social icons */}
+            <div className="flex space-x-4 mt-1 sm:mt-0">
+              <a
+                href="https://wa.me/7034426975"
+                aria-label="WhatsApp"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-200 transition-colors"
+              >
+                <FaWhatsapp className="text-lg sm:text-base" />
+              </a>
+              <a
+                href="https://www.instagram.com/voice__of_the__voiceless?igsh=c2pxbjI5YnpmY3dm"
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-200 transition-colors"
+              >
+                <FaInstagram className="text-lg sm:text-base" />
+              </a>
+              <a
+                href="https://www.facebook.com/share/19wxCiJRJK/?mibextid=wwXIfr"
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-200 transition-colors"
+              >
+                <FaFacebookF className="text-lg sm:text-base" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* ✅ Main Nav */}
         <nav className="bg-white shadow-sm w-full">
           <div className="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex justify-between items-center">
             {/* Logo */}
@@ -159,20 +219,6 @@ export default function Header() {
             <div className="hidden md:flex items-center space-x-8 text-[#58A3DC] font-medium">
               <a href="#about" className="hover:text-[#58A3DC] flex items-center gap-1">
                 Who we are
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
               </a>
               <a href="#campaigns" className="hover:text-[#58A3DC]">
                 Our Campaign
@@ -228,7 +274,8 @@ export default function Header() {
         </nav>
       </div>
 
-      <div style={{ height: "60px" }}></div>
+      {/* Spacer so content doesn’t hide under fixed header */}
+      <div style={{ height: "100px" }}></div>
     </>
   );
 }
