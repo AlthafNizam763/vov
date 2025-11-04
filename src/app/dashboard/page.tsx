@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { Card, CardContent } from "./Card";
@@ -14,63 +13,44 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// 🔹 Define types
-type Transaction = {
-  id: string;
-  name: string;
-  date: string;
-  amount: string; // example: "₹1200"
-  status: "Income" | "Outcome" | string;
-};
-
-type DashboardData = {
-  totalBalance: number;
-  totalIncome: number;
-  totalOutcome: number;
-  transactions: Transaction[];
-};
+// Sample data
+const chartData = [
+  { name: "Jan", value: 400 },
+  { name: "Feb", value: 300 },
+  { name: "Mar", value: 500 },
+  { name: "Apr", value: 200 },
+  { name: "May", value: 700 },
+  { name: "Jun", value: 600 },
+];
 
 export default function Dashboard() {
-  const [data, setData] = useState<DashboardData>({
-    totalBalance: 0,
-    totalIncome: 0,
-    totalOutcome: 0,
-    transactions: [],
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/razorpay/transactions");
-      const json = await res.json();
-      if (json.success) setData(json);
-    };
-    fetchData();
-  }, []);
-
-  const chartData = data.transactions.slice(0, 6).map((t, i) => ({
-    name: `Tx-${i + 1}`,
-    value: parseFloat(t.amount.replace("₹", "")),
-  }));
-
   return (
     <div className="min-h-screen bg-[#F8F9FD] flex flex-col">
+      {/* Topbar */}
       <Topbar />
+
       <div className="flex flex-1">
+        {/* Sidebar */}
         <Sidebar />
+
+        {/* Main Dashboard */}
         <main className="flex-1 p-6">
+          {/* Title */}
           <h1 className="text-2xl font-bold text-[#1E1E2F] mb-6">Dashboard</h1>
 
-          {/* Stat Cards */}
+          {/* Stats Cards */}
           <div className="text-[#1E1E2F] grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <StatCard title="Total Balance" amount={`₹${data.totalBalance}`} icon="💰" />
-            <StatCard title="Total Income" amount={`₹${data.totalIncome}`} icon="📈" />
-            <StatCard title="Total Outcome" amount={`₹${data.totalOutcome}`} icon="📉" />
-            <StatCard title="Transactions" amount={data.transactions.length.toString()} icon="🧾" />
+            <StatCard title="Total Balance" amount="₹632.000" icon="💰" />
+            <StatCard title="Total Income" amount="₹632.000" icon="👤" />
+            <StatCard title="Total Saving" amount="₹632.000" icon="💳" />
+            <StatCard title="Total Outcome" amount="₹632.000" icon="📉" />
           </div>
 
           {/* Analytics Section */}
           <div className="p-4 bg-white rounded-xl shadow-sm mb-6">
-            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">Analytics</h2>
+            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
+              Analytics
+            </h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
@@ -78,7 +58,12 @@ export default function Dashboard() {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#2297F2" strokeWidth={3} />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#2297F2"
+                    strokeWidth={3}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -86,21 +71,23 @@ export default function Dashboard() {
 
           {/* Transactions */}
           <div className="p-4 bg-white rounded-xl shadow-sm">
-            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">Transactions</h2>
+            <h2 className="text-lg text-[#1E1E2F] font-semibold mb-4">
+              Transactions
+            </h2>
             <div className="max-h-64 overflow-y-auto">
-              {data.transactions.length > 0 ? (
-                data.transactions.map((t) => (
-                  <TransactionRow
-                    key={t.id}
-                    name={t.name}
-                    date={t.date}
-                    amount={t.amount}
-                    status={t.status}
-                  />
-                ))
-              ) : (
-                <p className="text-gray-500">No transactions found.</p>
-              )}
+              <TransactionRow
+                name="Adobe After Effect"
+                date="Sat, 20 Apr 2020"
+                amount="₹80.09"
+                status="Income"
+              />
+              <TransactionRow
+                name="McDonald's"
+                date="Fri, 19 Apr 2020"
+                amount="₹7.03"
+                status="Outcome"
+              />
+              {/* more rows... */}
             </div>
           </div>
         </main>
@@ -110,15 +97,7 @@ export default function Dashboard() {
 }
 
 /* Components */
-function StatCard({
-  title,
-  amount,
-  icon,
-}: {
-  title: string;
-  amount: string;
-  icon: string;
-}) {
+function StatCard({ title, amount, icon }) {
   return (
     <Card className="p-4 shadow-sm">
       <CardContent>
@@ -134,19 +113,9 @@ function StatCard({
   );
 }
 
-function TransactionRow({
-  name,
-  date,
-  amount,
-  status,
-}: {
-  name: string;
-  date: string;
-  amount: string;
-  status: string;
-}) {
+function TransactionRow({ name, date, amount, status }) {
   return (
-    <div className="flex justify-between items-center border-b py-3">
+    <div className="flex justify-between items-center border-b py-3 ">
       <div>
         <p className="font-medium text-[#1E1E2F]">{name}</p>
         <p className="text-sm text-gray-500">{date}</p>
@@ -157,7 +126,7 @@ function TransactionRow({
           className={`px-3 py-1 rounded-full text-xs ${
             status === "Income"
               ? "bg-green-100 text-green-600"
-              : "bg-yellow-100 text-yellow-600"
+              : "bg-red-100 text-red-600"
           }`}
         >
           {status}
