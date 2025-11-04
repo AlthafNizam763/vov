@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, RouteHandlerContext } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 
@@ -18,10 +18,11 @@ async function connectToDb() {
 // 🟢 GET — Get one user by ID
 export async function GET(
   _request: NextRequest,
-  context: RouteHandlerContext<{ id: string }>
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params.id;
+    const { id } = params;
+
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -46,10 +47,11 @@ export async function GET(
 // 🟢 PUT — Update user by ID
 export async function PUT(
   request: NextRequest,
-  context: RouteHandlerContext<{ id: string }>
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params.id;
+    const { id } = params;
+
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -95,13 +97,14 @@ export async function PUT(
   }
 }
 
-// 🟢 DELETE — Delete a user by ID
+// 🟢 DELETE — Delete user by ID
 export async function DELETE(
   _request: NextRequest,
-  context: RouteHandlerContext<{ id: string }>
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params.id;
+    const { id } = params;
+
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
