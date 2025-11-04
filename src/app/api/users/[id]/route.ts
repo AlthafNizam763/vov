@@ -21,7 +21,7 @@ async function connectToDb() {
 }
 
 type RouteContext = {
-  params: { id: string } | Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 };
 
 // 🟢 GET — Get one user by ID
@@ -30,8 +30,8 @@ export async function GET(
   { params: paramsPromise }: RouteContext
 ) {
   try {
-    const params = await paramsPromise as { id: string };
-    const { id } = params;
+    const { id } = await paramsPromise;
+
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -66,8 +66,8 @@ export async function PUT(
   { params: paramsPromise }: RouteContext
 ) {
   try {
-    const params = await paramsPromise as { id: string };
-    const { id } = params;
+    const { id } = await paramsPromise;
+
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
@@ -129,8 +129,8 @@ export async function DELETE(
   { params: paramsPromise }: RouteContext
 ) {
   try {
-    const params = await paramsPromise as { id: string };
-    const { id } = params;
+    const { id } = await paramsPromise;
+
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
