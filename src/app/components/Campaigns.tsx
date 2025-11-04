@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -22,7 +23,7 @@ export default function Campaigns() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🟢 Fetch campaigns from API
+  // 🟢 Fetch campaigns
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
@@ -39,7 +40,38 @@ export default function Campaigns() {
     fetchCampaigns();
   }, []);
 
-  // ⏳ Loading State
+  // 🪙 Handle Razorpay Payment
+  const handleDonate = async (amount: number, campaignName?: string) => {
+    try {
+      const res = await fetch("/api/razorpay", { method: "POST" });
+      const data = await res.json();
+
+      if (!data.id) {
+        alert("Failed to create payment order");
+        return;
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: amount * 100, // paise
+        currency: "INR",
+        name: "Voice of the Voiceless",
+        description: campaignName || "Donation Campaign",
+        order_id: data.id,
+        handler: function (response: any) {
+          alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+        },
+        theme: { color: "#4EBC73" },
+      };
+
+      const razor = new (window as any).Razorpay(options);
+      razor.open();
+    } catch (err) {
+      console.error("Error starting payment:", err);
+      alert("Something went wrong with payment.");
+    }
+  };
+
   if (loading) {
     return (
       <section className="bg-white py-16 text-center">
@@ -48,7 +80,6 @@ export default function Campaigns() {
     );
   }
 
-  // ⚠️ No campaigns available
   if (campaigns.length === 0) {
     return (
       <section className="bg-white py-16 text-center">
@@ -59,6 +90,7 @@ export default function Campaigns() {
 
   return (
     <section className="bg-white py-16">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <div className="max-w-7xl mx-auto px-4">
         <p className="text-[#58A3DC] font-semibold mb-2">Our Campaign</p>
         <h2 className="text-3xl md:text-4xl font-bold mb-12 text-[#1D1D1D]">
@@ -80,13 +112,13 @@ export default function Campaigns() {
         >
           {campaigns.map((c) => {
             const raised = Number(c.raised) || 0;
-            const goal = Number(c.amount) || 1; // avoid divide by 0
+            const goal = Number(c.amount) || 1;
             const progress = Math.min((raised / goal) * 100, 100);
 
             return (
               <SwiperSlide key={c._id || c.title}>
                 <div className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
-                  {/* Campaign Image */}
+                  {/* Image */}
                   <div className="relative h-48 w-full">
                     <Image
                       src={c.image || "/images/default.jpg"}
@@ -101,7 +133,7 @@ export default function Campaigns() {
                     )}
                   </div>
 
-                  {/* Campaign Content */}
+                  {/* Content */}
                   <div className="p-6">
                     <h3 className="font-semibold text-lg mb-2 text-[#1D1D1D]">
                       {c.title || "Untitled Campaign"}
@@ -110,7 +142,6 @@ export default function Campaigns() {
                       {c.detail || "No details available for this campaign."}
                     </p>
 
-                    {/* Progress + Amounts */}
                     <div className="flex justify-between text-sm text-gray-700 mb-2">
                       <span>₹{raised.toLocaleString()}</span>
                       <span className="text-[#8A8A8A]">
@@ -126,7 +157,12 @@ export default function Campaigns() {
 
                     {/* Buttons */}
                     <div className="flex gap-3">
-                      <button className="flex-1 bg-[#4EBC73] text-white rounded-lg py-2 font-medium hover:bg-green-600">
+                      <button
+                        onClick={() =>
+                          handleDonate(goal / 10, c.title) // Example donation amount
+                        }
+                        className="flex-1 bg-[#4EBC73] text-white rounded-lg py-2 font-medium hover:bg-green-600"
+                      >
                         Donate now
                       </button>
                       <button className="flex-1 border border-gray-300 text-gray-700 rounded-lg py-2 font-medium hover:bg-[#58A3DC] hover:text-white">

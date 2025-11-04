@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
+import Script from "next/script";
 
 export default function Stats() {
   const stats = [
@@ -8,8 +11,43 @@ export default function Stats() {
     { label: "Projects Funded", value: "10M+" },
   ];
 
+  // 🪙 Razorpay Payment Function
+  const handleDonate = async () => {
+    try {
+      const res = await fetch("/api/razorpay", { method: "POST" });
+      const data = await res.json();
+
+      if (!data.id) {
+        alert("Failed to create payment order");
+        return;
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: 10000, // 💰 Example: ₹500.00 (in paise)
+        currency: "INR",
+        name: "Voice of the Voiceless",
+        description: "General Donation",
+        order_id: data.id,
+        handler: function (response: any) {
+          alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+        },
+        theme: { color: "#4EBC73" },
+      };
+
+      const razor = new (window as any).Razorpay(options);
+      razor.open();
+    } catch (err) {
+      console.error("Error starting payment:", err);
+      alert("Something went wrong while processing your donation.");
+    }
+  };
+
   return (
     <section id="stats" className="bg-white">
+      {/* Razorpay script */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+
       {/* Container for the white card */}
       <div className="max-w-6xl mx-auto px-6">
         <div className="relative">
@@ -28,9 +66,12 @@ export default function Stats() {
               </g>
             </svg>
 
+            {/* Content */}
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="md:max-w-2xl">
-                <p className="text-sm text-[#58A3DC] font-semibold">Act Now for a Better World</p>
+                <p className="text-sm text-[#58A3DC] font-semibold">
+                  Act Now for a Better World
+                </p>
                 <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-3">
                   Solutions to Help People in Need
                   <br className="hidden md:block" />
@@ -41,6 +82,7 @@ export default function Stats() {
 
               <div className="ml-auto">
                 <button
+                  onClick={handleDonate}
                   className="inline-flex items-center gap-2 bg-[#4EBC73] hover:bg-green-600 text-white px-5 py-3 rounded-md font-semibold shadow"
                   aria-label="Donate now"
                 >
@@ -53,7 +95,7 @@ export default function Stats() {
         </div>
       </div>
 
-      {/* Green band with stats that sits under (and slightly behind) the white card */}
+      {/* Green band with stats */}
       <div className="w-full bg-[#86cfa2] -mt-12">
         <div className="max-w-6xl mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
