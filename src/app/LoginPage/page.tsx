@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaUser, FaLock, FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 
 export default function LoginGlass() {
   const [email, setEmail] = useState("");
@@ -50,13 +50,22 @@ export default function LoginGlass() {
           className="w-72 mb-4 drop-shadow-lg"
         />
         <h2 className="text-2xl font-semibold drop-shadow-md">
-            صوت من لا صوت لهم
+          صوت من لا صوت لهم
         </h2>
       </div>
 
       {/* Right Side Login Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center">
-        <div className="w-[420px] h-[520px] bg-white/10 backdrop-blur-md border border-white/20 rounded-[36px] shadow-xl p-10 flex flex-col justify-center">
+      <div className="w-full md:w-1/2 flex items-center justify-center relative">
+        <div className="w-[420px] h-[520px] bg-white/10 backdrop-blur-md border border-white/20 rounded-[36px] shadow-xl p-10 flex flex-col justify-center relative">
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="absolute top-4 right-4 text-white hover:text-red-400 text-2xl transition"
+          >
+            <FaTimes />
+          </button>
+
           <h2 className="text-center text-white text-xl font-semibold mb-6">
             Log in to continue
           </h2>
