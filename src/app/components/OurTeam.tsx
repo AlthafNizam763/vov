@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 type TeamMember = {
   _id?: string;
@@ -35,7 +34,7 @@ export default function OurTeam() {
 
   // 🔁 Auto slide every 5s
   useEffect(() => {
-    if (team.length === 0) return;
+    if (!team.length) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % team.length);
     }, 5000);
@@ -43,38 +42,38 @@ export default function OurTeam() {
   }, [team]);
 
   const next = () => setIndex((prev) => (prev + 1) % team.length);
-  const prev = () => setIndex((prev) => (prev - 1 + team.length) % team.length);
+  const prev = () =>
+    setIndex((prev) => (prev - 1 + team.length) % team.length);
 
   if (loading)
     return (
-      <section className="bg-white py-16 text-center">
-        <p className="text-gray-500 animate-pulse">Loading team...</p>
+      <section className="bg-white py-20 text-center">
+        <p className="text-gray-500 animate-pulse text-lg">Loading team...</p>
       </section>
     );
 
-  if (team.length === 0)
+  if (!team.length)
     return (
-      <section className="bg-white py-16 text-center">
-        <p className="text-gray-500">No team members found.</p>
+      <section className="bg-white py-20 text-center">
+        <p className="text-gray-500 text-lg">No team members found.</p>
       </section>
     );
 
   const current = team[index];
 
   return (
-    <section id="team" className="bg-white py-16 px-4 sm:px-6">
-      {/* 🟢 OUR TEAM title always on top */}
-      <div className="text-center mb-10">
-        <h2 className="inline-block bg-[#4EBC73] text-white font-mono px-8 py-3 rounded-xl tracking-widest text-lg sm:text-xl shadow-md">
+    <section id="team" className="bg-white py-20 px-4 sm:px-6">
+      {/* Title */}
+      <div className="text-center mb-12">
+        <h2 className="inline-block bg-[#4EBC73] text-white font-mono px-10 py-3 rounded-xl tracking-widest text-xl sm:text-2xl shadow-md">
           OUR TEAM
         </h2>
       </div>
 
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-        {/* 🖼️ Profile section */}
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        {/* Profile Card */}
         <div className="relative flex justify-center md:justify-end">
-          {/* Profile card */}
-          <div className="relative bg-gray-100 rounded-2xl overflow-hidden shadow-lg z-10 w-64 h-80 sm:w-80 sm:h-96 flex items-center justify-center">
+          <div className="relative bg-gray-100 rounded-3xl overflow-hidden shadow-xl w-64 h-80 sm:w-80 sm:h-96 flex items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.img
                 key={current.image}
@@ -89,16 +88,16 @@ export default function OurTeam() {
             </AnimatePresence>
 
             {/* Nav buttons */}
-            <div className="absolute left-3 bottom-3 flex gap-2 sm:flex-col">
+            <div className="absolute left-3 bottom-3 flex gap-3 sm:flex-col">
               <button
                 onClick={prev}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#4EBC73] text-white shadow hover:bg-green-600"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-[#4EBC73] text-white shadow hover:bg-green-600 transition"
               >
                 ‹
               </button>
               <button
                 onClick={next}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#4EBC73] text-white shadow hover:bg-green-600"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-[#4EBC73] text-white shadow hover:bg-green-600 transition"
               >
                 ›
               </button>
@@ -106,8 +105,8 @@ export default function OurTeam() {
           </div>
         </div>
 
-        {/* 🧑 Text + Thumbnails */}
-        <div className="text-center md:text-left mt-6 md:mt-0">
+        {/* Text Section */}
+        <div className="text-center md:text-left mt-8 md:mt-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={current._id || current.name}
@@ -116,37 +115,15 @@ export default function OurTeam() {
               exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="text-lg sm:text-xl font-semibold text-[#58A3DC] mb-3">
+              <h3 className="text-xl sm:text-2xl font-semibold text-[#58A3DC] mb-4">
                 {current.name || "Unnamed Member"}
               </h3>
-              <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-6">
+              <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
                 {current.bio ||
                   "This team member is part of our organization dedicated to making a positive impact."}
               </p>
             </motion.div>
           </AnimatePresence>
-
-          {/* Thumbnails */}
-          <div className="flex flex-wrap justify-center md:justify-start gap-3">
-            {team.map((member, i) => (
-              <button
-                key={member._id || i}
-                onClick={() => setIndex(i)}
-                className={`w-16 h-16 sm:w-20 sm:h-20 rounded-md shadow overflow-hidden border-2 transition ${
-                  i === index ? "border-[#4EBC73]" : "border-transparent"
-                }`}
-              >
-                <Image
-                  src={member.image || "/images/default.jpg"}
-                  alt={member.name || "Team"}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                  priority={i === index}
-                />
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </section>
