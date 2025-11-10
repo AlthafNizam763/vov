@@ -1,9 +1,4 @@
-# *
 User-agent: *
 Allow: /
-
-# Host
-Host: https://www.voiceofthevoiceless.co.in
-
-# Sitemaps
 Sitemap: https://www.voiceofthevoiceless.co.in/sitemap.xml
+Host: https://www.voiceofthevoiceless.co.in
