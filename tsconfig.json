@@ -17,7 +17,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "plugins": [
       {
         "name": "next"
@@ -29,8 +29,13 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "src/app/models/Campaign.js", "src/app/models/Hero.js", "src/app/models/Program.js", "src/app/models/Team.js"  ],
+    "**/*.tsx",
+    "src/app/models/Campaign.js",
+    "src/app/models/Hero.js",
+    "src/app/models/Program.js",
+    "src/app/models/Team.js",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
