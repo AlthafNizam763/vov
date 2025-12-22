@@ -16,6 +16,9 @@ export const metadata = {
   title: "Voice of the Voiceless | Empowering the Unheard",
   description:
     "Voice of the Voiceless is a platform dedicated to helping those in need through compassion, awareness, and action. Join us to make a difference.",
+  verification: {
+    google: "PsWL1dgJXP5GSxTc8DwmLqLHoY_9YBsLfGwDs1vCcDM",
+  },
   keywords: [
     "Voice of the Voiceless",
     "NGO",
