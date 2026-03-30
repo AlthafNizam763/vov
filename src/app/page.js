@@ -4,7 +4,7 @@ import Campaigns from './components/Campaigns'
 import About from './components/About'
 import Stats from './components/Stats'
 import News from './components/News'
-import Testimonials from './components/Testimonials'
+// import Testimonials from './components/Testimonials'
 import Newsletter from './components/Newsletter'
 import Founder from './components/Founder'
 import OurTeam from './components/OurTeam'
@@ -21,7 +21,7 @@ export default function Page() {
         <Campaigns />
          <News />
          <Newsletter />
-         <Testimonials />
+         {/* <Testimonials /> */}
         <Stats />
         <Founder />
         <OurTeam/>
