@@ -55,9 +55,16 @@ export default function Footer() {
           >
             <FaFacebook />
           </a>
-            <Link href="/LoginPage" aria-label="Support">
-              <FcSupport />
-            </Link>
+            {/* Hidden Support Dashboard Link */}
+              <Link
+                href="/LoginPage"
+                aria-label="Support"
+                className="hover:opacity-80 transition-opacity ml-2"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="currentColor" opacity="0.8"/>
+                </svg>
+              </Link>
           </div>
         </div>
 
@@ -117,7 +124,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="hover:text-[#4EBC73] transition-colors"
             >
-             Support
+             Supporter
             </Link>
           </li>
         </ul>

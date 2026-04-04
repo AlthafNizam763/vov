@@ -26,7 +26,7 @@ export default function Founder() {
           <div>
             <h1 className="text-xl font-semibold uppercase text-gray-800 mb-2">FOUNDER</h1>
             <h4 className="text-lg md:text-2xl font-bold text-[#58A3DC] mb-4">
-              Azhar Pachalloor
+              Mohammed Azhar A (Azhar Pachalloor)
             </h4>
 
             <p className="text-gray-700 leading-relaxed mb-4">

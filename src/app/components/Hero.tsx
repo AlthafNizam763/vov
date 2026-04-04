@@ -194,7 +194,7 @@ export default function Hero() {
                 const el = document.getElementById("about");
                 if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className="inline-block bg-[#4EBC73] hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition"
+              className="inline-block bg-[#4EBC73] hover:bg-green-700 shadow-md hover:shadow-lg text-white px-8 py-3 rounded-lg font-medium transition"
             >
               Get Started
             </a>
@@ -209,7 +209,7 @@ export default function Hero() {
             <div className="absolute bottom-0 right-0 w-1/2 h-4 bg-[#4EBC73] rounded-bl-2xl"></div>
 
             <div className="relative z-10">
-              <span className="inline-block bg-[#4EBC73] text-white text-sm font-semibold px-4 py-1 rounded mb-4">
+              <span className="inline-block bg-[#4EBC73] text-white text-sm font-semibold px-4 py-1 rounded mb-4 shadow-sm">
                 {heroData?.heading || "Mission NMMS"}
               </span>
 
@@ -224,7 +224,7 @@ export default function Hero() {
               </p>
 
               {/* ✅ Animated Progress bar */}
-              <div className="mb-6 bg-[#F5F5F5] rounded-xl p-4">
+              <div className="mb-6 bg-[#F5F5F5] rounded-xl p-4 shadow-inner">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-2 bg-[#4EBC73] rounded-full transition-all duration-700 ease-out"
@@ -232,8 +232,8 @@ export default function Hero() {
                   />
                 </div>
                 <div className="flex justify-between text-sm mt-2 text-gray-700">
-                  <span>₹{amount.toLocaleString()} Raised</span>
-                  <span>₹{goal.toLocaleString()} Goal</span>
+                  <span className="font-medium text-gray-800">₹{amount.toLocaleString()} Raised</span>
+                  <span className="text-gray-500">₹{goal.toLocaleString()} Goal</span>
                 </div>
               </div>
 
@@ -242,10 +242,10 @@ export default function Hero() {
                 <button
                   onClick={() => handlePayment("ApplePay")}
                   disabled={loading}
-                  className={`border rounded-lg py-3 font-medium flex justify-center items-center gap-2 transition ${
+                  className={`border rounded-lg py-3 font-medium flex justify-center items-center gap-2 transition shadow-sm ${
                     loading
                       ? "bg-gray-100 cursor-not-allowed"
-                      : "hover:bg-gray-50"
+                      : "hover:bg-gray-50 hover:border-gray-300"
                   }`}
                 >
                   <FaApplePay className="text-4xl text-black" />
@@ -254,17 +254,17 @@ export default function Hero() {
                 <button
                   onClick={() => handlePayment("GooglePay")}
                   disabled={loading}
-                  className={`border rounded-lg py-3 font-medium flex justify-center items-center gap-2 transition ${
+                  className={`border rounded-lg py-3 font-medium flex justify-center items-center gap-2 transition shadow-sm ${
                     loading
                       ? "bg-gray-100 cursor-not-allowed"
-                      : "hover:bg-gray-50"
+                      : "hover:bg-gray-50 hover:border-gray-300"
                   }`}
                 >
                   <FaGooglePay className="text-4xl text-black" />
                 </button>
               </div>
 
-              <span className="absolute -right-10 -top-10 bg-[#4EBC73] rounded-full p-4 shadow-lg flex items-center justify-center">
+              <span className="absolute -right-10 -top-10 bg-[#4EBC73] rounded-full p-4 shadow-xl border-4 border-white flex items-center justify-center">
                 <Image
                   src="/images/charity.png"
                   alt="Charity Icon"

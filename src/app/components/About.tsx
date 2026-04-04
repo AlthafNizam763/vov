@@ -7,44 +7,42 @@ export default function About() {
     <section id="about" className="bg-white py-20">
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         {/* Left Images */}
-        <div className="relative flex justify-center md:justify-start animate-slide-left">
-          {/* Main Large Image */}
-          <div className="relative">
+        <div className="relative flex justify-center animate-slide-left mb-16 md:mb-0">
+          {/* Main Large Image Container */}
+          <div className="relative max-w-[280px] sm:max-w-[320px] md:max-w-none">
             <Image
               src="/images/blanck1.jpg"
               alt="Happy children"
-              className="rounded-2xl shadow-lg object-cover"
+              className="rounded-2xl shadow-lg object-cover w-full h-auto"
               width={320}
               height={400}
               priority
             />
 
             {/* Floating Green Icon */}
-            <span
-              className="absolute bg-[#4EBC73] p-2 rounded-full shadow-lg flex items-center justify-center"
-              style={{ top: "1cm", left: "-1cm" }}
-            >
+            <span className="absolute bg-[#4EBC73] p-2 rounded-full shadow-xl flex items-center justify-center -top-6 -left-6 md:top-8 md:-left-10 border-4 border-white">
               <Image
                 src="/images/solidarity.png"
                 alt="Charity Icon"
-                className="w-10 h-10 object-contain"
+                className="w-8 h-8 md:w-10 md:h-10 object-contain"
                 width={40}
                 height={40}
                 priority
               />
             </span>
-          </div>
 
-          {/* Small Overlapping Image */}
-          <Image
-            src="/images/blanck2.jpg"
-            alt="Community support"
-            className="rounded-2xl shadow-lg absolute"
-            style={{ width: "6cm", height: "auto", objectFit: "cover", bottom: "-2cm", right: "2cm" }}
-            width={170}
-            height={120}
-            priority
-          />
+            {/* Small Overlapping Image */}
+            <div className="absolute -bottom-10 -right-4 md:-bottom-8 md:-right-12 shadow-xl rounded-2xl overflow-hidden border-4 border-white w-[140px] sm:w-[170px]">
+              <Image
+                src="/images/blanck2.jpg"
+                alt="Community support"
+                className="object-cover w-full h-auto"
+                width={170}
+                height={120}
+                priority
+              />
+            </div>
+          </div>
         </div>
 
         {/* Right Content */}

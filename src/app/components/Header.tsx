@@ -144,8 +144,8 @@ export default function Header() {
               </a>
             </div>
 
-            {/* 🌐 Social icons */}
-            <div className="flex space-x-4 mt-1 sm:mt-0">
+            {/* 🌐 Social icons & Hidden Dashboard */}
+            <div className="flex items-center space-x-4 mt-1 sm:mt-0">
               <a
                 href="https://wa.me/7034426975"
                 aria-label="WhatsApp"
@@ -173,6 +173,16 @@ export default function Header() {
               >
                 <FaFacebookF className="text-lg sm:text-base" />
               </a>
+              {/* Hidden Support Dashboard Link */}
+              <Link
+                href="/LoginPage"
+                aria-label="Support"
+                className="hover:opacity-80 transition-opacity ml-2"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="currentColor" opacity="0.8"/>
+                </svg>
+              </Link>
             </div>
           </div>
         </div>
@@ -236,7 +246,7 @@ export default function Header() {
               onClick={handleDonate}
               disabled={loading}
               className={`hidden md:inline-flex items-center border border-[#58A3DC] text-[#58A3DC] px-4 py-2 rounded-lg font-semibold transition ${
-                loading ? "bg-gray-200 cursor-not-allowed" : "hover:bg-sky-50"
+                loading ? "bg-gray-200 cursor-not-allowed" : "hover:bg-sky-50 shadow-sm"
               }`}
             >
               {loading ? "Processing..." : "Donate Now"}
@@ -244,7 +254,7 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Mobile Menu */}
+            {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="md:hidden bg-white px-4 pb-4 pt-2 shadow">
               <a href="#about" className="block py-2 text-[#58A3DC] font-medium">
@@ -263,7 +273,7 @@ export default function Header() {
                 onClick={handleDonate}
                 disabled={loading}
                 className={`block py-2 mt-2 border border-[#58A3DC] text-[#58A3DC] rounded-lg font-semibold text-center w-full ${
-                  loading ? "bg-gray-100 cursor-not-allowed" : "hover:bg-sky-50"
+                  loading ? "bg-gray-100 cursor-not-allowed" : "hover:bg-sky-50 shadow-sm"
                 }`}
               >
                 {loading ? "Processing..." : "Donate Now"}
