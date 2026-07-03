@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaSearch, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
-import Sidebar from "../Sidebar";
-import Topbar from "../Topbar";
 import toast from "react-hot-toast";
 
 interface User {
@@ -13,6 +11,12 @@ interface User {
   email: string;
   role: string;
 }
+
+const roleStyles: Record<string, string> = {
+  Admin: "bg-brand-50 text-brand-700",
+  Editor: "bg-accent-50 text-accent-700",
+  Member: "bg-slate-100 text-slate-600",
+};
 
 export default function UserManager() {
   const [users, setUsers] = useState<User[]>([]);
@@ -76,109 +80,123 @@ export default function UserManager() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#F8F9FD] flex flex-col">
-      <Topbar />
-      <div className="flex flex-1">
-        <Sidebar />
+    <div className="max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <span className="eyebrow">Team Access</span>
+          <h2 className="section-title text-2xl md:text-3xl mt-2">User Manager</h2>
+        </div>
+        <button
+          className="btn btn-brand"
+          onClick={() => router.push("/dashboard/user-manager/adduser")}
+        >
+          <FaPlus /> Add User
+        </button>
+      </div>
 
-        <main className="flex-1 p-6 relative">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-[#1E1E2F]">User Manager</h1>
-            <button
-              className="flex items-center gap-2 px-4 py-2 bg-[#2297F2] text-white rounded-lg shadow hover:bg-blue-600 transition"
-              onClick={() => router.push("/dashboard/user-manager/adduser")}
-            >
-              <FaPlus /> Add User
-            </button>
-          </div>
+      {/* Search */}
+      <div className="relative w-full max-w-sm mb-6">
+        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-11 pr-4 py-2.5 dash-input"
+        />
+      </div>
 
-          {/* Search */}
-          <div className="relative w-full max-w-sm mb-6">
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-700"
-            />
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          </div>
-
-          {/* Table */}
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-            {loading ? (
-              <p className="text-center p-6 text-gray-500">Loading users...</p>
-            ) : filteredUsers.length > 0 ? (
-              <table className="w-full text-sm text-left text-gray-600">
-                <thead className="bg-gray-100 text-gray-700">
-                  <tr>
-                    <th className="px-6 py-3">Name</th>
-                    <th className="px-6 py-3">Email</th>
-                    <th className="px-6 py-3">Role</th>
-                    <th className="px-6 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr key={user._id} className="border-b hover:bg-gray-50">
-                      <td className="px-6 py-3">{user.name}</td>
-                      <td className="px-6 py-3">{user.email}</td>
-                      <td className="px-6 py-3">{user.role}</td>
-                      <td className="px-6 py-3 text-right flex justify-end gap-3">
+      {/* Table */}
+      <div className="dash-card overflow-hidden">
+        {loading ? (
+          <p className="text-center p-10 text-slate-400 animate-pulse">Loading users...</p>
+        ) : filteredUsers.length > 0 ? (
+          <div className="overflow-x-auto scroll-thin">
+            <table className="w-full text-sm text-left text-slate-600">
+              <thead>
+                <tr className="text-xs uppercase tracking-wide text-slate-400 border-b border-black/5">
+                  <th className="px-6 py-4 font-semibold">Name</th>
+                  <th className="px-6 py-4 font-semibold">Email</th>
+                  <th className="px-6 py-4 font-semibold">Role</th>
+                  <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user._id} className="border-b border-black/5 last:border-0 hover:bg-brand-50/40 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className="grid place-items-center w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white text-xs font-bold shrink-0">
+                          {user.name?.charAt(0)?.toUpperCase() || "?"}
+                        </span>
+                        <span className="font-medium text-ink">{user.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-500">{user.email}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${roleStyles[user.role] || "bg-slate-100 text-slate-600"}`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end gap-2">
                         <button
-                          className="text-blue-500 hover:text-blue-700"
+                          className="grid place-items-center w-9 h-9 rounded-lg text-brand-600 hover:bg-brand-50 transition"
+                          aria-label="Edit"
                           onClick={() => router.push(`/dashboard/user-manager/edituser?id=${user._id}`)}
                         >
                           <FaEdit />
                         </button>
                         <button
                           onClick={() => setConfirmDelete({ id: user._id, name: user.name })}
-                          className="text-red-500 hover:text-red-700"
+                          className="grid place-items-center w-9 h-9 rounded-lg text-red-500 hover:bg-red-50 transition"
+                          aria-label="Delete"
                         >
                           <FaTrash />
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-center p-6 text-gray-500">No users found</p>
-            )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          {/* Delete Confirmation Modal */}
-          {confirmDelete && (
-            <div className="fixed inset-0  bg-opacity-20 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-sm text-center">
-                <h2 className="text-xl font-semibold text-[#1E1E2F] mb-2">
-                  Are you sure?
-                </h2>
-                <p className="text-gray-600 mb-6">
-                  Do you really want to delete{" "}
-                  <span className="font-medium text-red-500">{confirmDelete.name}</span>?
-                  This action cannot be undone.
-                </p>
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => setConfirmDelete(null)}
-                    className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-medium hover:bg-gray-300 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => handleDelete(confirmDelete.id)}
-                    className="px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </main>
+        ) : (
+          <p className="text-center p-10 text-slate-400">No users found</p>
+        )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-ink/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-strong rounded-2xl p-7 shadow-2xl w-full max-w-sm text-center">
+            <div className="mx-auto mb-4 grid place-items-center w-14 h-14 rounded-full bg-red-50 text-red-500">
+              <FaTrash className="w-5 h-5" />
+            </div>
+            <h2 className="font-display text-xl font-bold text-ink mb-2">Are you sure?</h2>
+            <p className="text-slate-600 mb-6">
+              Do you really want to delete{" "}
+              <span className="font-semibold text-red-500">{confirmDelete.name}</span>? This
+              action cannot be undone.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 px-4 py-2.5 rounded-full bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(confirmDelete.id)}
+                className="flex-1 px-4 py-2.5 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition shadow-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

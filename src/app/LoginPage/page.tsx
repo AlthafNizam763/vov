@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 
 export default function LoginGlass() {
@@ -37,43 +38,55 @@ export default function LoginGlass() {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col md:flex-row items-center justify-center p-6 text-white"
-      style={{
-        background: "linear-gradient(to bottom right, #4EBC73, #58A3DC)",
-      }}
+      className="relative min-h-screen w-full flex flex-col md:flex-row items-center justify-center gap-8 p-6 text-white overflow-hidden"
+      style={{ background: "var(--gradient-hero)" }}
     >
+      {/* Decorative blobs */}
+      <span className="blob blob-accent w-[26rem] h-[26rem] -top-24 -left-24" />
+      <span className="blob blob-brand w-[24rem] h-[24rem] -bottom-24 -right-16" />
+
       {/* Left Side Image Section */}
-      <div className="flex flex-col items-center justify-center md:w-1/2 text-center mb-8 md:mb-0">
-        <img
-          src="/images/log.png" // Replace with your doctor image path
-          alt="Doctor"
-          className="w-72 mb-4 drop-shadow-lg"
+      <div className="relative flex flex-col items-center justify-center md:w-1/2 text-center mb-4 md:mb-0">
+        <Image
+          src="/images/log.png"
+          alt="Voice of the Voiceless"
+          width={288}
+          height={288}
+          className="w-72 h-auto mb-5 drop-shadow-2xl animate-float"
+          priority
         />
-        <h2 className="text-2xl font-semibold drop-shadow-md">
+        <h2 className="font-display text-3xl font-bold drop-shadow-md">
           صوت من لا صوت لهم
         </h2>
+        <p className="text-white/75 mt-2">Voice of the Voiceless · Admin Portal</p>
       </div>
 
       {/* Right Side Login Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center relative">
-        <div className="w-[420px] h-[520px] bg-white/10 backdrop-blur-md border border-white/20 rounded-[36px] shadow-xl p-10 flex flex-col justify-center relative">
+      <div className="relative w-full md:w-1/2 flex items-center justify-center">
+        <div className="w-full max-w-[420px] glass-dark rounded-[2rem] shadow-2xl p-9 sm:p-10 relative">
           {/* Close button */}
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="absolute top-4 right-4 text-white hover:text-red-400 text-2xl transition"
+            aria-label="Close"
+            className="absolute top-5 right-5 grid place-items-center w-9 h-9 rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition"
           >
             <FaTimes />
           </button>
 
-          <h2 className="text-center text-white text-xl font-semibold mb-6">
-            Log in to continue
-          </h2>
+          <div className="text-center mb-8">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] uppercase text-white/90">
+              Welcome Back
+            </span>
+            <h2 className="font-display text-2xl font-bold text-white mt-4">
+              Log in to continue
+            </h2>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
-            <div className="flex items-center bg-white/20 rounded-full px-4 py-2">
-              <div className="w-9 h-9 rounded-full bg-[#58A3DC]/90 flex items-center justify-center text-white mr-3">
+            <div className="flex items-center bg-white/12 border border-white/20 rounded-full px-3 py-2 focus-within:border-accent-300 focus-within:bg-white/20 transition">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white mr-3 shrink-0">
                 <FaUser size={14} />
               </div>
               <input
@@ -81,14 +94,14 @@ export default function LoginGlass() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-white placeholder:text-white text-sm"
+                className="flex-1 bg-transparent outline-none text-white placeholder:text-white/60 text-sm"
                 required
               />
             </div>
 
             {/* Password Field */}
-            <div className="flex items-center bg-white/20 rounded-full px-4 py-2 relative">
-              <div className="w-9 h-9 rounded-full bg-[#58A3DC]/90 flex items-center justify-center text-white mr-3">
+            <div className="flex items-center bg-white/12 border border-white/20 rounded-full px-3 py-2 relative focus-within:border-accent-300 focus-within:bg-white/20 transition">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white mr-3 shrink-0">
                 <FaLock size={14} />
               </div>
               <input
@@ -96,7 +109,7 @@ export default function LoginGlass() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-white placeholder:text-white text-sm pr-8"
+                className="flex-1 bg-transparent outline-none text-white placeholder:text-white/60 text-sm pr-8"
                 required
               />
               <button
@@ -111,8 +124,8 @@ export default function LoginGlass() {
             {/* Message */}
             {message && (
               <div
-                className={`text-center text-sm ${
-                  message.includes("✅") ? "text-green-300" : "text-red-400"
+                className={`text-center text-sm font-medium ${
+                  message.includes("✅") ? "text-accent-200" : "text-red-300"
                 }`}
               >
                 {message}
@@ -120,10 +133,7 @@ export default function LoginGlass() {
             )}
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-3 rounded-full text-white font-medium bg-gradient-to-r from-blue-500 to-blue-700 hover:opacity-90 transition"
-            >
+            <button type="submit" className="btn btn-primary w-full mt-2">
               Login
             </button>
           </form>

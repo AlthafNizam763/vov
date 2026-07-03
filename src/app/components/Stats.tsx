@@ -2,6 +2,7 @@
 
 import React from "react";
 import Script from "next/script";
+import { AiFillHeart } from "react-icons/ai";
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -48,7 +49,7 @@ export default function Stats() {
         handler: (response: RazorpayResponse) => {
           alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
         },
-        theme: { color: "#4EBC73" },
+        theme: { color: "#12b07a" },
       };
 
       const RazorpayConstructor = (window as unknown as {
@@ -63,60 +64,55 @@ export default function Stats() {
   };
 
   return (
-    <section id="stats" className="bg-white">
+    <section id="stats" className="bg-canvas">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
+      {/* CTA card */}
       <div className="max-w-6xl mx-auto px-6">
-        <div className="relative">
-          <div className="relative z-20 bg-white rounded-2xl shadow-2xl p-6 md:p-12 overflow-hidden">
-            <svg
-              className="absolute inset-0 w-full h-full opacity-6 pointer-events-none z-0"
-              xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="none"
-              viewBox="0 0 1440 200"
-            >
-              <g fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M0,160 C200,120 400,40 600,60 C800,80 1000,140 1200,120 C1400,100 1440,90 1440,90" />
-                <path d="M0,180 C220,140 420,60 620,80 C820,100 1020,160 1220,140 C1420,120 1440,110 1440,110" />
-              </g>
-            </svg>
-
-            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="md:max-w-2xl">
-                <p className="text-sm text-[#58A3DC] font-semibold">
-                  Act Now for a Better World
-                </p>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-3">
-                  Solutions to Help People in Need
-                  <br className="hidden md:block" />
-                  and Save the Planet
-                </h3>
-                <span className="block w-14 h-1 bg-[#4EBC73] rounded mt-4"></span>
-              </div>
-
-              <div className="ml-auto">
-                <button
-                  onClick={handleDonate}
-                  className="inline-flex items-center gap-2 bg-[#4EBC73] hover:bg-green-600 text-white px-5 py-3 rounded-md font-semibold shadow"
-                >
-                  Donate Now ❤
-                </button>
-              </div>
+        <div className="relative z-20 glass-strong rounded-[1.75rem] p-8 md:p-12 shadow-xl overflow-hidden">
+          <span className="blob blob-brand w-64 h-64 -top-24 -right-16 opacity-30" />
+          <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="md:max-w-2xl">
+              <span className="eyebrow">Act Now for a Better World</span>
+              <h3 className="section-title text-2xl md:text-[2rem] mt-3">
+                Solutions to Help People in Need
+                <br className="hidden md:block" />
+                and <span className="text-gradient-accent">Save the Planet</span>
+              </h3>
             </div>
+
+            <button
+              onClick={handleDonate}
+              className="btn btn-primary shrink-0"
+            >
+              Donate Now <AiFillHeart className="text-white" />
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="w-full bg-[#86cfa2] -mt-12">
-        <div className="max-w-6xl mx-auto px-6 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+      {/* Stats band */}
+      <div
+        className="relative -mt-20 pt-32 pb-16 overflow-hidden"
+        style={{ background: "var(--gradient-deep)" }}
+      >
+        <span className="blob blob-accent w-80 h-80 top-0 right-0 opacity-30" />
+        <span className="blob blob-brand w-72 h-72 bottom-0 left-10 opacity-30" />
+
+        <div className="relative max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {stats.map((s) => (
-              <div key={s.label} className="flex flex-col items-center">
-                <p className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
+              <div
+                key={s.label}
+                className="glass-dark rounded-2xl p-6 text-center flex flex-col items-center hover-lift"
+              >
+                <p className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-white">
                   {s.value}
                 </p>
-                <span className="block w-10 h-1 bg-[#58A3DC] rounded my-2"></span>
-                <p className="text-xs md:text-sm mt-2">{s.label}</p>
+                <span className="block w-10 h-1 rounded-full my-3 bg-gradient-to-r from-accent-300 to-accent-500" />
+                <p className="text-xs md:text-sm text-white/75 font-medium">
+                  {s.label}
+                </p>
               </div>
             ))}
           </div>

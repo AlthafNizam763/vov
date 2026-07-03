@@ -20,7 +20,7 @@ async function connectToDb() {
 // 🟢 GET — Fetch user by ID
 export async function GET(_request: NextRequest, context: any) {
   try {
-    const id = context.params.id;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
@@ -45,7 +45,12 @@ export async function GET(_request: NextRequest, context: any) {
 // 🟢 PUT — Update user by ID
 export async function PUT(request: NextRequest, context: any) {
   try {
-    const id = context.params.id;
+    const { id } = await context.params;
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
+    }
+
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role) {
@@ -93,7 +98,7 @@ export async function PUT(request: NextRequest, context: any) {
 // 🟢 DELETE — Delete user by ID
 export async function DELETE(_request: NextRequest, context: any) {
   try {
-    const id = context.params.id;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });

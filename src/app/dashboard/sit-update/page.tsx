@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Sidebar from "../Sidebar";
-import Topbar from "../Topbar";
+import { Save, Plus, Trash2 } from "lucide-react";
 
 const NAV_ITEMS = [
   { key: "hero", label: "Hero Section" },
@@ -213,196 +212,208 @@ export default function SiteUpdate() {
     setTeam((prev) => prev.filter((t) => t._id !== id));
   };
 
+  const fileInputClass =
+    "w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700 file:font-semibold file:cursor-pointer hover:file:bg-brand-100 transition";
+
   return (
-    <div className="min-h-screen bg-[#F8F9FD] flex flex-col">
-      <Topbar />
+    <div className="max-w-5xl mx-auto">
+      <div className="dash-card p-6 md:p-8">
+        <span className="eyebrow">Content Management</span>
+        <h2 className="section-title text-2xl md:text-3xl mt-2 mb-8">
+          Update Site Content
+        </h2>
 
-      <div className="flex flex-1">
-        <Sidebar />
+        {/* Navigation Tabs */}
+        <nav className="flex flex-wrap gap-1.5 mb-8 p-1.5 rounded-2xl bg-white/60 border border-black/5 w-fit">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveSection(item.key)}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                activeSection === item.key
+                  ? "bg-gradient-to-r from-brand-600 to-accent-500 text-white shadow-md"
+                  : "text-slate-600 hover:text-brand-700 hover:bg-brand-50"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
-        <main className="flex-1 p-8">
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">
-              🛠 Update Site Content
-            </h1>
+        {/* HERO SECTION */}
+        {activeSection === "hero" && (
+          <form onSubmit={handleHeroSubmit} className="space-y-4 max-w-2xl">
+            <h3 className="font-display font-bold text-ink text-lg">Hero Section</h3>
+            <div>
+              <label className="dash-label">Heading</label>
+              <input type="text" placeholder="Heading" value={heroHeading} onChange={(e) => setHeroHeading(e.target.value)} className="dash-input" />
+            </div>
+            <div>
+              <label className="dash-label">Headline</label>
+              <input type="text" placeholder="Headline" value={heroHeadline} onChange={(e) => setHeroHeadline(e.target.value)} className="dash-input" />
+            </div>
+            <div>
+              <label className="dash-label">Passage</label>
+              <textarea placeholder="Passage" value={heroPassage} onChange={(e) => setHeroPassage(e.target.value)} className="dash-input" rows={3} />
+            </div>
+            <div>
+              <label className="dash-label">Amount</label>
+              <input type="text" placeholder="Amount" value={heroAmount} onChange={(e) => setHeroAmount(e.target.value)} className="dash-input" />
+            </div>
+            <button className="btn btn-brand w-full">
+              <Save className="w-4 h-4" /> Save Changes
+            </button>
+          </form>
+        )}
 
-            {/* Navigation Tabs */}
-            <nav className="flex mb-8 border-b border-gray-200">
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => setActiveSection(item.key)}
-                  className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-all duration-150 ${
-                    activeSection === item.key
-                      ? "border-[#2297F2] text-[#2297F2]"
-                      : "border-transparent text-gray-600 hover:text-[#2297F2]"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
+        {/* OUR CAMPAIGN SECTION */}
+        {activeSection === "campaign" && (
+          <section>
+            <h3 className="font-display font-bold text-ink text-lg mb-4">Our Campaign</h3>
+            <form onSubmit={handleAddCampaign} className="space-y-3 mb-8 max-w-2xl">
+              <input type="text" placeholder="Title" value={newCampaign.title} onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })} className="dash-input" />
+              <textarea placeholder="Passage" value={newCampaign.passage} onChange={(e) => setNewCampaign({ ...newCampaign, passage: e.target.value })} className="dash-input" rows={2} />
+              <input type="text" placeholder="Amount" value={newCampaign.amount} onChange={(e) => setNewCampaign({ ...newCampaign, amount: e.target.value })} className="dash-input" />
+              <textarea placeholder="Detail" value={newCampaign.detail} onChange={(e) => setNewCampaign({ ...newCampaign, detail: e.target.value })} className="dash-input" rows={2} />
+              <input type="file" accept="image/*" onChange={(e) => setNewCampaign({ ...newCampaign, image: e.target.files ? e.target.files[0] : null })} className={fileInputClass} />
+              <button className="btn btn-primary w-full">
+                <Plus className="w-4 h-4" /> Add Campaign
+              </button>
+            </form>
 
-            {/* HERO SECTION */}
-            {activeSection === "hero" && (
-              <form onSubmit={handleHeroSubmit} className="space-y-4 max-w-2xl mx-auto text-gray-900">
-                <h2 className="text-lg font-semibold text-gray-800">Hero Section</h2>
-                <input type="text" placeholder="Heading" value={heroHeading} onChange={(e) => setHeroHeading(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                <input type="text" placeholder="Headline" value={heroHeadline} onChange={(e) => setHeroHeadline(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                <textarea placeholder="Passage" value={heroPassage} onChange={(e) => setHeroPassage(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2" rows={3} />
-                <input type="text" placeholder="Amount" value={heroAmount} onChange={(e) => setHeroAmount(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                <button className="bg-[#2297F2] text-white py-2 rounded-lg w-full hover:bg-blue-600">💾 Save Changes</button>
-              </form>
-            )}
+            <DataTable
+              headers={["Title", "Amount", "Image", ""]}
+              rows={campaigns.map((c) => ({
+                id: c._id,
+                cells: [c.title, c.amount],
+                image: c.image,
+                imageAlt: c.title,
+                onDelete: () => handleDeleteCampaign(c._id),
+              }))}
+            />
+          </section>
+        )}
 
-            {/* OUR CAMPAIGN SECTION */}
-            {activeSection === "campaign" && (
-              <section className="max-w-3xl mx-auto">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Our Campaign</h2>
-                <form onSubmit={handleAddCampaign} className="space-y-3 mb-6 text-gray-900">
-                  <input type="text" placeholder="Title" value={newCampaign.title} onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <textarea placeholder="Passage" value={newCampaign.passage} onChange={(e) => setNewCampaign({ ...newCampaign, passage: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <input type="text" placeholder="Amount" value={newCampaign.amount} onChange={(e) => setNewCampaign({ ...newCampaign, amount: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <textarea placeholder="Detail" value={newCampaign.detail} onChange={(e) => setNewCampaign({ ...newCampaign, detail: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <input type="file" accept="image/*" onChange={(e) => setNewCampaign({ ...newCampaign, image: e.target.files ? e.target.files[0] : null })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <button className="bg-[#2297F2] text-white py-2 rounded-lg w-full hover:bg-blue-600">➕ Add Campaign</button>
-                </form>
+        {/* PROGRAM SECTION */}
+        {activeSection === "program" && (
+          <section>
+            <h3 className="font-display font-bold text-ink text-lg mb-4">Latest Program</h3>
+            <form onSubmit={handleAddProgram} className="space-y-3 mb-8 max-w-2xl">
+              <textarea placeholder="Program Details" value={newProgram.passage} onChange={(e) => setNewProgram({ ...newProgram, passage: e.target.value })} className="dash-input" rows={2} />
+              <input type="date" value={newProgram.date} onChange={(e) => setNewProgram({ ...newProgram, date: e.target.value })} className="dash-input" />
+              <input type="file" accept="image/*" onChange={(e) => setNewProgram({ ...newProgram, image: e.target.files ? e.target.files[0] : null })} className={fileInputClass} />
+              <button className="btn btn-primary w-full">
+                <Plus className="w-4 h-4" /> Add Program
+              </button>
+            </form>
 
-                <div className="overflow-x-auto border rounded-lg text-gray-900">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="p-3 text-left">Title</th>
-                        <th className="p-3 text-left">Amount</th>
-                        <th className="p-3 text-left">Image</th>
-                        <th className="p-3 text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {campaigns.map((c) => (
-                        <tr key={c._id} className="border-t">
-                          <td className="p-3">{c.title}</td>
-                          <td className="p-3">{c.amount}</td>
-                          <td className="p-3">
-                            {c.image && (
-                              <Image
-                                src={c.image}
-                                alt={c.title}
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 object-cover rounded"
-                              />
-                            )}
-                          </td>
-                          <td className="p-3 text-center">
-                            <button onClick={() => handleDeleteCampaign(c._id)} className="text-red-500 hover:underline">🗑 Delete</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
+            <DataTable
+              headers={["Program", "Date", "Image", ""]}
+              rows={programs.map((p) => ({
+                id: p._id,
+                cells: [p.passage, p.date],
+                image: p.image,
+                imageAlt: "Program",
+                onDelete: () => handleDeleteProgram(p._id),
+              }))}
+            />
+          </section>
+        )}
 
-            {/* PROGRAM SECTION */}
-            {activeSection === "program" && (
-              <section className="max-w-3xl mx-auto">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Latest Program</h2>
-                <form onSubmit={handleAddProgram} className="space-y-3 mb-6 text-gray-900">
-                  <textarea placeholder="Program Details" value={newProgram.passage} onChange={(e) => setNewProgram({ ...newProgram, passage: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <input type="date" value={newProgram.date} onChange={(e) => setNewProgram({ ...newProgram, date: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <input type="file" accept="image/*" onChange={(e) => setNewProgram({ ...newProgram, image: e.target.files ? e.target.files[0] : null })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <button className="bg-[#2297F2] text-white py-2 rounded-lg w-full hover:bg-blue-600">➕ Add Program</button>
-                </form>
+        {/* TEAM SECTION */}
+        {activeSection === "team" && (
+          <section>
+            <h3 className="font-display font-bold text-ink text-lg mb-4">Our Team</h3>
+            <form onSubmit={handleAddTeamMember} className="space-y-3 mb-8 max-w-2xl">
+              <input type="text" placeholder="Name" value={newTeamMember.name} onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })} className="dash-input" />
+              <textarea placeholder="Bio" value={newTeamMember.bio} onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })} className="dash-input" rows={2} />
+              <input type="file" accept="image/*" onChange={(e) => setNewTeamMember({ ...newTeamMember, image: e.target.files ? e.target.files[0] : null })} className={fileInputClass} />
+              <button className="btn btn-primary w-full">
+                <Plus className="w-4 h-4" /> Add Team Member
+              </button>
+            </form>
 
-                <div className="overflow-x-auto border rounded-lg text-gray-900">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="p-3 text-left">Program</th>
-                        <th className="p-3 text-left">Date</th>
-                        <th className="p-3 text-left">Image</th>
-                        <th className="p-3 text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {programs.map((p) => (
-                        <tr key={p._id} className="border-t">
-                          <td className="p-3">{p.passage}</td>
-                          <td className="p-3">{p.date}</td>
-                          <td className="p-3">
-                            {p.image && (
-                              <Image
-                                src={p.image}
-                                alt="Program"
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 object-cover rounded"
-                              />
-                            )}
-                          </td>
-                          <td className="p-3 text-center">
-                            <button onClick={() => handleDeleteProgram(p._id)} className="text-red-500 hover:underline">🗑 Delete</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
-
-            {/* TEAM SECTION */}
-            {activeSection === "team" && (
-              <section className="max-w-3xl mx-auto">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Our Team</h2>
-                <form onSubmit={handleAddTeamMember} className="space-y-3 mb-6 text-gray-900">
-                  <input type="text" placeholder="Name" value={newTeamMember.name} onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <textarea placeholder="Bio" value={newTeamMember.bio} onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <input type="file" accept="image/*" onChange={(e) => setNewTeamMember({ ...newTeamMember, image: e.target.files ? e.target.files[0] : null })} className="w-full border border-gray-300 rounded-lg px-4 py-2" />
-                  <button className="bg-[#2297F2] text-white py-2 rounded-lg w-full hover:bg-blue-600">➕ Add Team Member</button>
-                </form>
-
-                <div className="overflow-x-auto border rounded-lg text-gray-900">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="p-3 text-left">Name</th>
-                        <th className="p-3 text-left">Bio</th>
-                        <th className="p-3 text-left">Image</th>
-                        <th className="p-3 text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {team.map((t) => (
-                        <tr key={t._id} className="border-t">
-                          <td className="p-3">{t.name}</td>
-                          <td className="p-3">{t.bio}</td>
-                          <td className="p-3">
-                            {t.image && (
-                              <Image
-                                src={t.image}
-                                alt={t.name}
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 object-cover rounded"
-                              />
-                            )}
-                          </td>
-                          <td className="p-3 text-center">
-                            <button onClick={() => handleDeleteTeamMember(t._id)} className="text-red-500 hover:underline">🗑 Delete</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
-          </div>
-        </main>
+            <DataTable
+              headers={["Name", "Bio", "Image", ""]}
+              rows={team.map((t) => ({
+                id: t._id,
+                cells: [t.name, t.bio],
+                image: t.image,
+                imageAlt: t.name,
+                onDelete: () => handleDeleteTeamMember(t._id),
+              }))}
+            />
+          </section>
+        )}
       </div>
+    </div>
+  );
+}
+
+/* ---- Reusable data table ---- */
+type TableRow = {
+  id: string;
+  cells: string[];
+  image?: string;
+  imageAlt: string;
+  onDelete: () => void;
+};
+
+function DataTable({ headers, rows }: { headers: string[]; rows: TableRow[] }) {
+  return (
+    <div className="overflow-x-auto scroll-thin rounded-2xl border border-black/5 bg-white/60">
+      <table className="w-full text-sm text-left text-slate-700">
+        <thead>
+          <tr className="text-xs uppercase tracking-wide text-slate-400 border-b border-black/5">
+            {headers.map((h, i) => (
+              <th key={i} className={`px-5 py-3.5 font-semibold ${i === headers.length - 1 ? "text-right" : ""}`}>
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={headers.length} className="px-5 py-8 text-center text-slate-400">
+                No entries yet.
+              </td>
+            </tr>
+          ) : (
+            rows.map((row) => (
+              <tr key={row.id} className="border-b border-black/5 last:border-0 hover:bg-brand-50/40 transition-colors">
+                {row.cells.map((cell, i) => (
+                  <td key={i} className={`px-5 py-3.5 ${i === 0 ? "font-medium text-ink max-w-[220px] truncate" : "text-slate-500 max-w-[220px] truncate"}`}>
+                    {cell}
+                  </td>
+                ))}
+                <td className="px-5 py-3.5">
+                  {row.image ? (
+                    <Image
+                      src={row.image}
+                      alt={row.imageAlt}
+                      width={44}
+                      height={44}
+                      className="w-11 h-11 object-cover rounded-lg ring-1 ring-black/5"
+                    />
+                  ) : (
+                    <span className="text-slate-300">—</span>
+                  )}
+                </td>
+                <td className="px-5 py-3.5 text-right">
+                  <button
+                    onClick={row.onDelete}
+                    aria-label="Delete"
+                    className="grid place-items-center w-9 h-9 rounded-lg text-red-500 hover:bg-red-50 transition ml-auto"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

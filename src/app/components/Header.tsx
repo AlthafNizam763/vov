@@ -41,10 +41,18 @@ interface RazorpayOrder {
   currency: string;
 }
 
+const NAV_LINKS = [
+  { href: "#about", label: "Who we are" },
+  { href: "#campaigns", label: "Our Campaign" },
+  { href: "#news", label: "News" },
+  { href: "#contact", label: "Contact Us" },
+];
+
 /* ------------------ ✅ Main Component ------------------ */
 export default function Header() {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -52,11 +60,12 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
         setShowNav(false);
       } else {
         setShowNav(true);
       }
+      setScrolled(currentScrollY > 12);
       setLastScrollY(currentScrollY);
     };
 
@@ -86,7 +95,7 @@ export default function Header() {
         handler: (response: RazorpayResponse) => {
           alert(`✅ Donation successful! ID: ${response.razorpay_payment_id}`);
         },
-        theme: { color: "#58A3DC" },
+        theme: { color: "#12b07a" },
       };
 
       const RazorpayConstructor = (window as unknown as {
@@ -114,30 +123,25 @@ export default function Header() {
         }`}
       >
         {/* ✅ Top Bar */}
-        <div className="bg-[#58A3DC] text-white text-xs sm:text-sm">
+        <div className="bg-gradient-to-r from-brand-900 via-brand-700 to-accent-700 text-white/90 text-xs sm:text-sm">
           <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center py-2 gap-2 sm:gap-0">
-            
             {/* 📞 Contact info */}
             <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3 text-center sm:text-left">
-              {/* Phone */}
               <a
                 href="tel:+918075873624"
-                className="flex items-center gap-1 hover:text-gray-200 transition-colors"
+                className="flex items-center gap-1.5 hover:text-white transition-colors"
               >
-                <IoCall className="text-base" />
-                <span className="text-[13px] sm:text-[14px]">
-                  +91 80758 73624
-                </span>
+                <IoCall className="text-sm text-accent-300" />
+                <span className="text-[13px] sm:text-[14px]">+91 80758 73624</span>
               </a>
 
-              <span className="hidden sm:inline">|</span>
+              <span className="hidden sm:inline text-white/30">|</span>
 
-              {/* Email */}
               <a
                 href="mailto:info.voiceofthevoiceless1@gmail.com"
-                className="flex items-center gap-1 hover:text-gray-200 transition-colors break-all"
+                className="flex items-center gap-1.5 hover:text-white transition-colors break-all"
               >
-                <MdEmail className="text-base" />
+                <MdEmail className="text-sm text-accent-300" />
                 <span className="text-[13px] sm:text-[14px]">
                   info.voiceofthevoiceless1@gmail.com
                 </span>
@@ -145,42 +149,39 @@ export default function Header() {
             </div>
 
             {/* 🌐 Social icons & Hidden Dashboard */}
-            <div className="flex items-center space-x-4 mt-1 sm:mt-0">
-              <a
-                href="https://wa.me/7034426975"
-                aria-label="WhatsApp"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gray-200 transition-colors"
-              >
-                <FaWhatsapp className="text-lg sm:text-base" />
-              </a>
-              <a
-                href="https://www.instagram.com/voice__of_the__voiceless?igsh=c2pxbjI5YnpmY3dm"
-                aria-label="Instagram"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gray-200 transition-colors"
-              >
-                <FaInstagram className="text-lg sm:text-base" />
-              </a>
-              <a
-                href="https://www.facebook.com/share/19wxCiJRJK/?mibextid=wwXIfr"
-                aria-label="Facebook"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gray-200 transition-colors"
-              >
-                <FaFacebookF className="text-lg sm:text-base" />
-              </a>
+            <div className="flex items-center gap-3 mt-1 sm:mt-0">
+              {[
+                { href: "https://wa.me/7034426975", label: "WhatsApp", Icon: FaWhatsapp },
+                {
+                  href: "https://www.instagram.com/voice__of_the__voiceless?igsh=c2pxbjI5YnpmY3dm",
+                  label: "Instagram",
+                  Icon: FaInstagram,
+                },
+                {
+                  href: "https://www.facebook.com/share/19wxCiJRJK/?mibextid=wwXIfr",
+                  label: "Facebook",
+                  Icon: FaFacebookF,
+                },
+              ].map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid place-items-center w-7 h-7 rounded-full bg-white/10 hover:bg-white/25 transition-colors"
+                >
+                  <Icon className="text-[13px]" />
+                </a>
+              ))}
               {/* Hidden Support Dashboard Link */}
               <Link
                 href="/LoginPage"
                 aria-label="Support"
-                className="hover:opacity-80 transition-opacity ml-2"
+                className="hover:opacity-80 transition-opacity ml-1"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="currentColor" opacity="0.8"/>
+                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="currentColor" opacity="0.7" />
                 </svg>
               </Link>
             </div>
@@ -188,104 +189,94 @@ export default function Header() {
         </div>
 
         {/* ✅ Main Nav */}
-        <nav className="bg-white shadow-sm w-full">
+        <nav className={`glass-nav w-full transition-all duration-300 ${scrolled ? "py-0" : ""}`}>
           <div className="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex justify-between items-center">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <Image
-                src="/images/vov-logo.png"
-                alt="Voice of the Voiceless logo"
-                width={40}
-                height={40}
-                className="h-8 w-auto"
-              />
-              <span className="text-gray-900 font-semibold text-lg">
-                Voice of the Voiceless
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <span className="grid place-items-center w-10 h-10 rounded-xl bg-white shadow-sm ring-1 ring-black/5 overflow-hidden transition-transform group-hover:scale-105">
+                <Image
+                  src="/images/vov-logo.png"
+                  alt="Voice of the Voiceless logo"
+                  width={40}
+                  height={40}
+                  className="h-7 w-auto"
+                />
+              </span>
+              <span className="font-display font-bold text-[15px] sm:text-lg leading-tight text-ink">
+                Voice of the <span className="text-gradient">Voiceless</span>
               </span>
             </Link>
 
             {/* Hamburger Menu (Mobile) */}
             <button
-              className="md:hidden flex items-center px-2 py-1 border rounded text-[#58A3DC] border-[#58A3DC]"
+              className="md:hidden grid place-items-center w-10 h-10 rounded-xl text-brand-700 bg-white/70 ring-1 ring-black/5 shadow-sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
+                  d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
                 />
               </svg>
             </button>
 
             {/* Desktop Links */}
-            <div className="hidden md:flex items-center space-x-8 text-[#58A3DC] font-medium">
-              <a href="#about" className="hover:text-[#58A3DC] flex items-center gap-1">
-                Who we are
-              </a>
-              <a href="#campaigns" className="hover:text-[#58A3DC]">
-                Our Campaign
-              </a>
-              <a href="#news" className="hover:text-[#58A3DC]">
-                News
-              </a>
-              <a href="#contact" className="hover:text-[#58A3DC]">
-                Contact Us
-              </a>
+            <div className="hidden md:flex items-center gap-8 text-[15px] font-medium text-slate-700">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="relative py-1 transition-colors hover:text-brand-700 after:absolute after:left-0 after:-bottom-0.5 after:h-0.5 after:w-0 after:rounded-full after:bg-gradient-to-r after:from-brand-600 after:to-accent-500 after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
 
             {/* ✅ Donate Button */}
             <button
               onClick={handleDonate}
               disabled={loading}
-              className={`hidden md:inline-flex items-center border border-[#58A3DC] text-[#58A3DC] px-4 py-2 rounded-lg font-semibold transition ${
-                loading ? "bg-gray-200 cursor-not-allowed" : "hover:bg-sky-50 shadow-sm"
-              }`}
+              className="hidden md:inline-flex btn btn-primary text-sm px-5 py-2.5"
             >
               {loading ? "Processing..." : "Donate Now"}
-              <AiFillHeart className="ml-2 text-[#58A3DC]" />
+              <AiFillHeart className={loading ? "hidden" : "text-white"} />
             </button>
           </div>
 
-            {/* Mobile Menu */}
+          {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden bg-white px-4 pb-4 pt-2 shadow">
-              <a href="#about" className="block py-2 text-[#58A3DC] font-medium">
-                Who we are
-              </a>
-              <a href="#campaigns" className="block py-2 text-[#58A3DC] font-medium">
-                Our Campaign
-              </a>
-              <a href="#news" className="block py-2 text-[#58A3DC] font-medium">
-                News
-              </a>
-              <a href="#contact" className="block py-2 text-[#58A3DC] font-medium">
-                Contact Us
-              </a>
+            <div className="md:hidden glass-strong border-t border-black/5 px-4 pb-5 pt-3">
+              <div className="flex flex-col">
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-3 text-slate-700 font-medium border-b border-black/5 hover:text-brand-700 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
               <button
                 onClick={handleDonate}
                 disabled={loading}
-                className={`block py-2 mt-2 border border-[#58A3DC] text-[#58A3DC] rounded-lg font-semibold text-center w-full ${
-                  loading ? "bg-gray-100 cursor-not-allowed" : "hover:bg-sky-50 shadow-sm"
-                }`}
+                className="btn btn-primary w-full mt-4"
               >
                 {loading ? "Processing..." : "Donate Now"}
-                <AiFillHeart className="ml-2 text-[#58A3DC] inline" />
+                <AiFillHeart className={loading ? "hidden" : "text-white"} />
               </button>
             </div>
           )}
         </nav>
       </div>
 
-      {/* Spacer so content doesn’t hide under fixed header */}
-      <div style={{ height: "100px" }}></div>
+      {/* Spacer so content doesn't hide under fixed header */}
+      <div style={{ height: "104px" }}></div>
     </>
   );
 }

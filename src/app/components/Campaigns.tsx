@@ -5,6 +5,7 @@ import Image from "next/image";
 import Script from "next/script";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { AiFillHeart } from "react-icons/ai";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -79,7 +80,7 @@ export default function Campaigns() {
         handler: function (response: RazorpayResponse) {
           alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
         },
-        theme: { color: "#4EBC73" },
+        theme: { color: "#12b07a" },
       };
 
       // ✅ Correctly type Razorpay
@@ -92,107 +93,136 @@ export default function Campaigns() {
     }
   };
 
+  const SectionShell = ({ children }: { children: React.ReactNode }) => (
+    <section id="campaigns" className="relative bg-canvas py-24 overflow-hidden">
+      <span className="blob blob-accent w-[24rem] h-[24rem] top-10 -right-24 opacity-30" />
+      <span className="blob blob-brand w-80 h-80 bottom-0 -left-20 opacity-30" />
+      <div className="relative max-w-7xl mx-auto px-4">{children}</div>
+    </section>
+  );
+
+  const Header = () => (
+    <div className="mb-14 max-w-2xl">
+      <span className="eyebrow">Our Campaign</span>
+      <h2 className="section-title text-3xl md:text-[2.6rem] mt-4">
+        Giving Help To Those Who{" "}
+        <span className="text-gradient-accent">Need It</span>
+      </h2>
+    </div>
+  );
+
   if (loading) {
     return (
-      <section className="bg-white py-16 text-center">
-        <p className="text-gray-500 animate-pulse">Loading campaigns...</p>
-      </section>
+      <SectionShell>
+        <Header />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="glass rounded-[1.5rem] overflow-hidden">
+              <div className="h-48 bg-slate-200/60 animate-pulse" />
+              <div className="p-6 space-y-3">
+                <div className="h-5 w-2/3 bg-slate-200/70 rounded animate-pulse" />
+                <div className="h-4 w-full bg-slate-200/60 rounded animate-pulse" />
+                <div className="h-2 w-full bg-slate-200/60 rounded-full animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionShell>
     );
   }
 
   if (campaigns.length === 0) {
     return (
-      <section className="bg-white py-16 text-center">
-        <p className="text-gray-500">No campaigns available.</p>
-      </section>
+      <SectionShell>
+        <Header />
+        <p className="text-slate-500">No campaigns available.</p>
+      </SectionShell>
     );
   }
 
   return (
-    <section className="bg-white py-16">
+    <SectionShell>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <div className="max-w-7xl mx-auto px-4">
-        <p className="text-[#58A3DC] font-semibold mb-2">Our Campaign</p>
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-[#1D1D1D]">
-          Giving Help To Those Who Need It
-        </h2>
+      <Header />
 
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={24}
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          breakpoints={{
-            0: { slidesPerView: 1 },
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
-          }}
-        >
-          {campaigns.map((c) => {
-            const raised = Number(c.raised) || 0;
-            const goal = Number(c.amount) || 1;
-            const progress = Math.min((raised / goal) * 100, 100);
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={28}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        breakpoints={{
+          0: { slidesPerView: 1 },
+          640: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+        }}
+      >
+        {campaigns.map((c) => {
+          const raised = Number(c.raised) || 0;
+          const goal = Number(c.amount) || 1;
+          const progress = Math.min((raised / goal) * 100, 100);
 
-            return (
-              <SwiperSlide key={c._id || c.title}>
-                <div className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={c.image || "/images/default.jpg"}
-                      alt={c.title || "Campaign"}
-                      fill
-                      className="object-cover"
-                    />
-                    {c.tag && (
-                      <span className="absolute top-3 left-3 bg-[#4EBC73] text-white font-semibold text-sm px-3 py-1 rounded-full">
-                        {c.tag}
+          return (
+            <SwiperSlide key={c._id || c.title} className="h-auto pb-2">
+              <div className="glass rounded-[1.5rem] overflow-hidden hover-lift h-full flex flex-col">
+                <div className="relative h-52 w-full overflow-hidden group">
+                  <Image
+                    src={c.image || "/images/default.jpg"}
+                    alt={c.title || "Campaign"}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                  {c.tag && (
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-semibold text-xs px-3 py-1.5 rounded-full shadow-md">
+                      {c.tag}
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="font-display font-bold text-lg mb-2 text-ink line-clamp-1">
+                    {c.title || "Untitled Campaign"}
+                  </h3>
+                  <p className="text-slate-600 mb-5 text-sm leading-relaxed line-clamp-2">
+                    {c.detail || "No details available for this campaign."}
+                  </p>
+
+                  <div className="mt-auto">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="font-semibold text-ink">
+                        ₹{raised.toLocaleString()}
                       </span>
-                    )}
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="font-semibold text-lg mb-2 text-[#1D1D1D]">
-                      {c.title || "Untitled Campaign"}
-                    </h3>
-                    <p className="text-[#1D1D1D] mb-4">
-                      {c.detail || "No details available for this campaign."}
-                    </p>
-
-                    <div className="flex justify-between text-sm text-gray-700 mb-2">
-                      <span>₹{raised.toLocaleString()}</span>
-                      <span className="text-[#8A8A8A]">
-                        ₹{goal.toLocaleString()}
+                      <span className="text-slate-400">
+                        of ₹{goal.toLocaleString()}
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                    <div className="w-full bg-slate-200/70 rounded-full h-2 mb-5 overflow-hidden">
                       <div
-                        className="bg-[#4EBC73] h-2 rounded-full transition-all duration-700 ease-out"
+                        className="bg-gradient-to-r from-accent-400 to-accent-600 h-2 rounded-full transition-all duration-700 ease-out"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
 
                     <div className="flex gap-3">
                       <button
-                        onClick={() =>
-                          handleDonate(goal / 10, c.title)
-                        }
-                        className="flex-1 bg-[#4EBC73] text-white rounded-lg py-2 font-medium hover:bg-green-600"
+                        onClick={() => handleDonate(goal / 10, c.title)}
+                        className="btn btn-primary flex-1 text-sm py-2.5 px-3"
                       >
-                        Donate now
+                        Donate <AiFillHeart className="text-white" />
                       </button>
-                      <button className="flex-1 border border-gray-300 text-gray-700 rounded-lg py-2 font-medium hover:bg-[#58A3DC] hover:text-white">
+                      <button className="btn btn-outline flex-1 text-sm py-2.5 px-3">
                         See detail
                       </button>
                     </div>
                   </div>
                 </div>
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
-      </div>
-    </section>
+              </div>
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
+    </SectionShell>
   );
 }

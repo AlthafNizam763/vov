@@ -1,9 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "cdn.builder.io",
-      // add other domains here if needed
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.builder.io",
+      },
+      // add other remote patterns here if needed
     ],
   },
 };
