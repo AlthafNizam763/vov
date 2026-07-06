@@ -1,7 +1,14 @@
-"use server";
 import { NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongodb";
 import bcrypt from "bcryptjs";
+import {
+  createSessionToken,
+  sessionCookieOptions,
+  SESSION_COOKIE,
+  SESSION_MAX_AGE,
+} from "../../../../lib/auth";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -28,10 +35,20 @@ export async function POST(req: Request) {
     const { password: _, ...userWithoutPassword } = user;
     const sanitizedUser = { ...userWithoutPassword, _id: user._id.toString() };
 
-    return NextResponse.json({
+    // ✅ Issue a signed session cookie
+    const token = await createSessionToken({
+      id: sanitizedUser._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
+
+    const res = NextResponse.json({
       message: "Login successful",
       user: sanitizedUser,
     });
+    res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions(SESSION_MAX_AGE));
+    return res;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json({ message: "Login failed" }, { status: 500 });

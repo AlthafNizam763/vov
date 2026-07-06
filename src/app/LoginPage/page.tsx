@@ -30,7 +30,13 @@ export default function LoginGlass() {
       }
 
       setMessage("✅ Login successful! Redirecting...");
-      setTimeout(() => router.push("/dashboard"), 1500);
+      setTimeout(() => {
+        // Return to the originally-requested dashboard page if we were bounced
+        // here by the auth guard; only allow internal /dashboard destinations.
+        const redirect = new URLSearchParams(window.location.search).get("redirect");
+        const dest = redirect && redirect.startsWith("/dashboard") ? redirect : "/dashboard";
+        router.push(dest);
+      }, 1500);
     } catch {
       setMessage("❌ Something went wrong. Try again.");
     }

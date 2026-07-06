@@ -17,6 +17,17 @@ export default function Sidebar() {
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname?.startsWith(href);
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/users/logout", { method: "POST" });
+    } catch {
+      /* ignore network error — still navigate away */
+    }
+    // Hard navigation to Home clears the client router cache so the dashboard
+    // can't be revealed via the back button after logging out.
+    window.location.href = "/";
+  };
+
   return (
     <aside className="sticky top-0 h-screen w-[76px] lg:w-64 shrink-0 flex flex-col dash-card !rounded-none border-t-0 border-l-0 border-b-0 z-30">
       {/* Brand */}
@@ -66,14 +77,14 @@ export default function Sidebar() {
 
       {/* Logout */}
       <div className="p-3 lg:p-4 border-t border-black/5">
-        <Link
-          href="/LoginPage"
+        <button
+          onClick={handleLogout}
           title="Logout"
-          className="nav-link justify-center lg:justify-start text-red-500 hover:!bg-red-50 hover:!text-red-600"
+          className="nav-link w-full justify-center lg:justify-start text-red-500 hover:!bg-red-50 hover:!text-red-600"
         >
           <LogOut size={20} strokeWidth={2} className="shrink-0" />
           <span className="hidden lg:inline">Logout</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );
