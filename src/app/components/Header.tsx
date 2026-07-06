@@ -8,6 +8,7 @@ import { AiFillHeart } from "react-icons/ai";
 import { FaWhatsapp, FaInstagram, FaFacebookF } from "react-icons/fa";
 import { IoCall } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
+import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
 
 /* ------------------ ✅ Type Definitions ------------------ */
 interface RazorpayResponse {
@@ -93,7 +94,7 @@ export default function Header() {
         description: "Donation",
         order_id: order.id,
         handler: (response: RazorpayResponse) => {
-          alert(`✅ Donation successful! ID: ${response.razorpay_payment_id}`);
+          showDonationSuccess({ paymentId: response.razorpay_payment_id });
         },
         theme: { color: "#12b07a" },
       };
@@ -106,7 +107,7 @@ export default function Header() {
       razor.open();
     } catch (error) {
       console.error(error);
-      alert("❌ Payment failed. Please try again.");
+      showPaymentError("Your payment could not be processed. Please try again.");
     } finally {
       setLoading(false);
     }

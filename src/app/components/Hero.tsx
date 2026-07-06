@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FaApplePay, FaGooglePay, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import Script from "next/script";
+import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
 import "./hero-animations.css";
 
 /* ✅ Type Definitions */
@@ -132,9 +133,10 @@ export default function Hero() {
         description: `Donation via ${method}`,
         order_id: order.id,
         handler: (response: RazorpayResponse) => {
-          alert(
-            `✅ ${method} Payment Success!\nPayment ID: ${response.razorpay_payment_id}`
-          );
+          showDonationSuccess({
+            paymentId: response.razorpay_payment_id,
+            message: `Thank you for donating via ${method}.`,
+          });
         },
         theme: { color: "#12b07a" },
         method: { [method.toLowerCase()]: true },
@@ -144,7 +146,7 @@ export default function Hero() {
       razor.open();
     } catch (err) {
       console.error(err);
-      alert("❌ Payment failed. Please try again.");
+      showPaymentError("Your payment could not be processed. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@
 import React from "react";
 import Script from "next/script";
 import { AiFillHeart } from "react-icons/ai";
+import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -35,7 +36,7 @@ export default function Stats() {
       const data = await res.json();
 
       if (!data.id) {
-        alert("Failed to create payment order");
+        showPaymentError("We couldn't start the payment. Please try again.");
         return;
       }
 
@@ -47,7 +48,7 @@ export default function Stats() {
         description: "General Donation",
         order_id: data.id,
         handler: (response: RazorpayResponse) => {
-          alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+          showDonationSuccess({ paymentId: response.razorpay_payment_id });
         },
         theme: { color: "#12b07a" },
       };
@@ -59,7 +60,7 @@ export default function Stats() {
       razor.open();
     } catch (err) {
       console.error("Error starting payment:", err);
-      alert("Something went wrong while processing your donation.");
+      showPaymentError();
     }
   };
 

@@ -6,6 +6,7 @@ import Script from "next/script";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { AiFillHeart } from "react-icons/ai";
+import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -66,7 +67,7 @@ export default function Campaigns() {
       const data = await res.json();
 
       if (!data.id) {
-        alert("Failed to create payment order");
+        showPaymentError("We couldn't start the payment. Please try again.");
         return;
       }
 
@@ -78,7 +79,12 @@ export default function Campaigns() {
         description: campaignName || "Donation Campaign",
         order_id: data.id,
         handler: function (response: RazorpayResponse) {
-          alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+          showDonationSuccess({
+            paymentId: response.razorpay_payment_id,
+            message: campaignName
+              ? `Thank you for supporting “${campaignName}”.`
+              : "Thank you — your support changes lives.",
+          });
         },
         theme: { color: "#12b07a" },
       };
@@ -89,7 +95,7 @@ export default function Campaigns() {
       razor.open();
     } catch (err) {
       console.error("Error starting payment:", err);
-      alert("Something went wrong with payment.");
+      showPaymentError();
     }
   };
 
