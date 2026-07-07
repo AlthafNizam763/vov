@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
+import { getSession } from "../../../../lib/session-server";
+import { canManageUsers } from "../../../../lib/roles";
 
 export const runtime = "nodejs";
 
@@ -42,9 +44,17 @@ export async function GET(_request: NextRequest, context: any) {
   }
 }
 
-// 🟢 PUT — Update user by ID
+// 🟢 PUT — Update user by ID (Administrator only)
 export async function PUT(request: NextRequest, context: any) {
   try {
+    const session = await getSession();
+    if (!canManageUsers(session?.role)) {
+      return NextResponse.json(
+        { message: "Forbidden: only Administrators can update users." },
+        { status: 403 }
+      );
+    }
+
     const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
@@ -95,9 +105,17 @@ export async function PUT(request: NextRequest, context: any) {
   }
 }
 
-// 🟢 DELETE — Delete user by ID
+// 🟢 DELETE — Delete user by ID (Administrator only)
 export async function DELETE(_request: NextRequest, context: any) {
   try {
+    const session = await getSession();
+    if (!canManageUsers(session?.role)) {
+      return NextResponse.json(
+        { message: "Forbidden: only Administrators can delete users." },
+        { status: 403 }
+      );
+    }
+
     const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {

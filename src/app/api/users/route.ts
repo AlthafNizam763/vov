@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 import bcrypt from "bcryptjs";
+import { getSession } from "../../../lib/session-server";
+import { canManageUsers } from "../../../lib/roles";
 
 // 🔹 GET — fetch all users
 export async function GET() {
@@ -17,9 +19,17 @@ export async function GET() {
   }
 }
 
-// 🔹 POST — create a new user
+// 🔹 POST — create a new user (Administrator only)
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!canManageUsers(session?.role)) {
+      return NextResponse.json(
+        { message: "Forbidden: only Administrators can create users." },
+        { status: 403 }
+      );
+    }
+
     const { name, email, role, password } = await request.json();
 
     if (!name || !email || !role || !password) {

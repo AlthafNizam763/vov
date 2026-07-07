@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { UserCog } from "lucide-react";
+import { normalizeRole } from "../../../../lib/roles";
 
 function LoadingCard({ label = "Loading..." }: { label?: string }) {
   return (
@@ -73,7 +74,7 @@ function EditUserInner() {
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.message || "Failed to fetch user");
-        setUser(data.user);
+        setUser({ ...data.user, role: normalizeRole(data.user.role) });
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error("Failed to load user:", error.message);
@@ -191,7 +192,7 @@ function EditUserInner() {
               onChange={(e) => setUser({ ...user, role: e.target.value })}
               className="dash-input"
             >
-              <option value="Admin">Admin</option>
+              <option value="Administrator">Administrator</option>
               <option value="Editor">Editor</option>
               <option value="Member">Member</option>
             </select>

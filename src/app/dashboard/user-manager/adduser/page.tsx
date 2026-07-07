@@ -9,7 +9,7 @@ import { UserPlus } from "lucide-react";
 export default function AddUser() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("Admin");
+  const [role, setRole] = useState("Administrator");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -135,7 +135,7 @@ export default function AddUser() {
               onChange={(e) => setRole(e.target.value)}
               className="dash-input"
             >
-              <option value="Admin">Admin</option>
+              <option value="Administrator">Administrator</option>
               <option value="Editor">Editor</option>
               <option value="Member">Member</option>
             </select>

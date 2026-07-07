@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaSearch, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { useDashboardUser } from "../UserContext";
+import { canManageUsers, normalizeRole } from "../../../lib/roles";
 
 interface User {
   _id: string;
@@ -13,9 +15,9 @@ interface User {
 }
 
 const roleStyles: Record<string, string> = {
-  Admin: "bg-brand-50 text-brand-700",
-  Editor: "bg-accent-50 text-accent-700",
-  Member: "bg-slate-100 text-slate-600",
+  Administrator: "bg-red-50 text-red-600",
+  Editor: "bg-blue-50 text-blue-600",
+  Member: "bg-green-50 text-green-700",
 };
 
 export default function UserManager() {
@@ -78,6 +80,8 @@ export default function UserManager() {
   );
 
   const router = useRouter();
+  const { role } = useDashboardUser();
+  const canManage = canManageUsers(role);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -86,13 +90,25 @@ export default function UserManager() {
         <div>
           <span className="eyebrow">Team Access</span>
           <h2 className="section-title text-2xl md:text-3xl mt-2">User Manager</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            {loading
+              ? "Loading…"
+              : `${users.length} total user${users.length === 1 ? "" : "s"}`}
+            {!canManage && (
+              <span className="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
+                View only
+              </span>
+            )}
+          </p>
         </div>
-        <button
-          className="btn btn-brand"
-          onClick={() => router.push("/dashboard/user-manager/adduser")}
-        >
-          <FaPlus /> Add User
-        </button>
+        {canManage && (
+          <button
+            className="btn btn-brand"
+            onClick={() => router.push("/dashboard/user-manager/adduser")}
+          >
+            <FaPlus /> Add User
+          </button>
+        )}
       </div>
 
       {/* Search */}
@@ -119,7 +135,9 @@ export default function UserManager() {
                   <th className="px-6 py-4 font-semibold">Name</th>
                   <th className="px-6 py-4 font-semibold">Email</th>
                   <th className="px-6 py-4 font-semibold">Role</th>
-                  <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                  {canManage && (
+                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -135,28 +153,30 @@ export default function UserManager() {
                     </td>
                     <td className="px-6 py-4 text-slate-500">{user.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${roleStyles[user.role] || "bg-slate-100 text-slate-600"}`}>
-                        {user.role}
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${roleStyles[normalizeRole(user.role)]}`}>
+                        {normalizeRole(user.role)}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          className="grid place-items-center w-9 h-9 rounded-lg text-brand-600 hover:bg-brand-50 transition"
-                          aria-label="Edit"
-                          onClick={() => router.push(`/dashboard/user-manager/edituser?id=${user._id}`)}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => setConfirmDelete({ id: user._id, name: user.name })}
-                          className="grid place-items-center w-9 h-9 rounded-lg text-red-500 hover:bg-red-50 transition"
-                          aria-label="Delete"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
+                    {canManage && (
+                      <td className="px-6 py-4">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            className="grid place-items-center w-9 h-9 rounded-lg text-brand-600 hover:bg-brand-50 transition"
+                            aria-label="Edit"
+                            onClick={() => router.push(`/dashboard/user-manager/edituser?id=${user._id}`)}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => setConfirmDelete({ id: user._id, name: user.name })}
+                            className="grid place-items-center w-9 h-9 rounded-lg text-red-500 hover:bg-red-50 transition"
+                            aria-label="Delete"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

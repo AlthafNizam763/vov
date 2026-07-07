@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 import { ObjectId } from "mongodb";
+import { requireContentEditor } from "../../../lib/session-server";
 
 export const runtime = "nodejs"; // Ensures this runs on the server
 
@@ -27,6 +28,9 @@ export async function GET() {
 // 🟢 POST — add a new team member (supports image upload)
 export async function POST(req: Request) {
   try {
+    const denied = await requireContentEditor();
+    if (denied) return denied;
+
     const contentType = req.headers.get("content-type") || "";
     let newMember: TeamMember = {};
     let imageBase64 = "";
@@ -69,6 +73,9 @@ export async function POST(req: Request) {
 // 🟢 DELETE — remove a team member by ID
 export async function DELETE(req: Request) {
   try {
+    const denied = await requireContentEditor();
+    if (denied) return denied;
+
     const { id } = await req.json();
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);

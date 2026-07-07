@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import path from "path";
 import { readFile } from "fs/promises";
+import { requireContentEditor } from "../../../lib/session-server";
 
 export const runtime = "nodejs";
 
@@ -29,6 +30,9 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
+  const denied = await requireContentEditor();
+  if (denied) return denied;
+
   // Require DB for writes
   if (!process.env.MONGODB_URI) {
     return NextResponse.json(

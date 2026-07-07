@@ -2,6 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { Bell, Search } from "lucide-react";
+import { useDashboardUser } from "./UserContext";
+import { roleAvatarClasses } from "../../lib/roles";
 
 const TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -16,6 +18,13 @@ export default function Topbar() {
   const title =
     TITLES[pathname] ||
     (pathname.startsWith("/dashboard/user-manager") ? "User Manager" : "Dashboard");
+
+  const user = useDashboardUser();
+  const avatarLetter = user.email ? user.email.charAt(0).toUpperCase() : "?";
+  // Username part of the email, uppercased (e.g. bondi@gmail.com → BONDI)
+  const displayName = user.email
+    ? user.email.split("@")[0].toUpperCase()
+    : "Not signed in";
 
   return (
     <header className="glass-nav sticky top-0 z-20 h-16 flex items-center gap-4 px-4 sm:px-6">
@@ -48,12 +57,18 @@ export default function Topbar() {
         </button>
 
         <div className="flex items-center gap-2.5 pl-1">
-          <div className="hidden sm:flex flex-col items-end leading-tight">
-            <span className="text-sm font-semibold text-ink">Member</span>
-            <span className="text-xs text-slate-500">Administrator</span>
+          <div className="hidden sm:flex flex-col items-end leading-tight max-w-[180px]">
+            <span className="text-sm font-semibold text-ink truncate max-w-full">
+              {displayName}
+            </span>
+            <span className="text-xs text-slate-500">{user.role}</span>
           </div>
-          <div className="grid place-items-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white font-bold shadow-md">
-            M
+          <div
+            className={`grid place-items-center w-10 h-10 rounded-full bg-gradient-to-br ${roleAvatarClasses(
+              user.role
+            )} text-white font-bold shadow-md`}
+          >
+            {avatarLetter}
           </div>
         </div>
       </div>

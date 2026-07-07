@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 import { ObjectId } from "mongodb";
+import { requireContentEditor } from "../../../lib/session-server";
 
 export const runtime = "nodejs";
 
@@ -29,6 +30,9 @@ export async function GET() {
 // 🔹 POST new campaign (with image upload)
 export async function POST(req: Request) {
   try {
+    const denied = await requireContentEditor();
+    if (denied) return denied;
+
     const contentType = req.headers.get("content-type") || "";
 
     let newCampaign: Campaign = {};
@@ -74,6 +78,9 @@ export async function POST(req: Request) {
 // 🔹 DELETE campaign by ID
 export async function DELETE(req: Request) {
   try {
+    const denied = await requireContentEditor();
+    if (denied) return denied;
+
     const { id } = await req.json();
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB);

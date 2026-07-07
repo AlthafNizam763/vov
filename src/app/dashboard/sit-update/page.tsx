@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Save, Plus, Trash2 } from "lucide-react";
+import { Save, Plus, Trash2, Lock } from "lucide-react";
+import { useDashboardUser } from "../UserContext";
+import { canEditContent } from "../../../lib/roles";
 
 const NAV_ITEMS = [
   { key: "hero", label: "Hero Section" },
@@ -37,6 +39,8 @@ interface TeamMember {
 
 export default function SiteUpdate() {
   const [activeSection, setActiveSection] = useState("hero");
+  const { role } = useDashboardUser();
+  const canEdit = canEditContent(role);
 
   // HERO SECTION
   const [heroHeading, setHeroHeading] = useState("");
@@ -219,9 +223,17 @@ export default function SiteUpdate() {
     <div className="max-w-5xl mx-auto">
       <div className="dash-card p-6 md:p-8">
         <span className="eyebrow">Content Management</span>
-        <h2 className="section-title text-2xl md:text-3xl mt-2 mb-8">
+        <h2 className="section-title text-2xl md:text-3xl mt-2 mb-6">
           Update Site Content
         </h2>
+
+        {!canEdit && (
+          <div className="mb-8 flex items-center gap-2.5 rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
+            <Lock className="w-4 h-4 shrink-0 text-slate-400" />
+            You have <span className="font-semibold">read-only</span> access. You can
+            view content but can&apos;t make changes.
+          </div>
+        )}
 
         {/* Navigation Tabs */}
         <nav className="flex flex-wrap gap-1.5 mb-8 p-1.5 rounded-2xl bg-white/60 border border-black/5 w-fit">
@@ -244,6 +256,7 @@ export default function SiteUpdate() {
         {activeSection === "hero" && (
           <form onSubmit={handleHeroSubmit} className="space-y-4 max-w-2xl">
             <h3 className="font-display font-bold text-ink text-lg">Hero Section</h3>
+            <fieldset disabled={!canEdit} className="space-y-4 border-0 p-0 m-0 disabled:opacity-70">
             <div>
               <label className="dash-label">Heading</label>
               <input type="text" placeholder="Heading" value={heroHeading} onChange={(e) => setHeroHeading(e.target.value)} className="dash-input" />
@@ -260,9 +273,12 @@ export default function SiteUpdate() {
               <label className="dash-label">Amount</label>
               <input type="text" placeholder="Amount" value={heroAmount} onChange={(e) => setHeroAmount(e.target.value)} className="dash-input" />
             </div>
-            <button className="btn btn-brand w-full">
-              <Save className="w-4 h-4" /> Save Changes
-            </button>
+            </fieldset>
+            {canEdit && (
+              <button className="btn btn-brand w-full">
+                <Save className="w-4 h-4" /> Save Changes
+              </button>
+            )}
           </form>
         )}
 
@@ -270,6 +286,7 @@ export default function SiteUpdate() {
         {activeSection === "campaign" && (
           <section>
             <h3 className="font-display font-bold text-ink text-lg mb-4">Our Campaign</h3>
+            {canEdit && (
             <form onSubmit={handleAddCampaign} className="space-y-3 mb-8 max-w-2xl">
               <input type="text" placeholder="Title" value={newCampaign.title} onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })} className="dash-input" />
               <textarea placeholder="Passage" value={newCampaign.passage} onChange={(e) => setNewCampaign({ ...newCampaign, passage: e.target.value })} className="dash-input" rows={2} />
@@ -280,8 +297,10 @@ export default function SiteUpdate() {
                 <Plus className="w-4 h-4" /> Add Campaign
               </button>
             </form>
+            )}
 
             <DataTable
+              canDelete={canEdit}
               headers={["Title", "Amount", "Image", ""]}
               rows={campaigns.map((c) => ({
                 id: c._id,
@@ -298,6 +317,7 @@ export default function SiteUpdate() {
         {activeSection === "program" && (
           <section>
             <h3 className="font-display font-bold text-ink text-lg mb-4">Latest Program</h3>
+            {canEdit && (
             <form onSubmit={handleAddProgram} className="space-y-3 mb-8 max-w-2xl">
               <textarea placeholder="Program Details" value={newProgram.passage} onChange={(e) => setNewProgram({ ...newProgram, passage: e.target.value })} className="dash-input" rows={2} />
               <input type="date" value={newProgram.date} onChange={(e) => setNewProgram({ ...newProgram, date: e.target.value })} className="dash-input" />
@@ -306,8 +326,10 @@ export default function SiteUpdate() {
                 <Plus className="w-4 h-4" /> Add Program
               </button>
             </form>
+            )}
 
             <DataTable
+              canDelete={canEdit}
               headers={["Program", "Date", "Image", ""]}
               rows={programs.map((p) => ({
                 id: p._id,
@@ -324,6 +346,7 @@ export default function SiteUpdate() {
         {activeSection === "team" && (
           <section>
             <h3 className="font-display font-bold text-ink text-lg mb-4">Our Team</h3>
+            {canEdit && (
             <form onSubmit={handleAddTeamMember} className="space-y-3 mb-8 max-w-2xl">
               <input type="text" placeholder="Name" value={newTeamMember.name} onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })} className="dash-input" />
               <textarea placeholder="Bio" value={newTeamMember.bio} onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })} className="dash-input" rows={2} />
@@ -332,8 +355,10 @@ export default function SiteUpdate() {
                 <Plus className="w-4 h-4" /> Add Team Member
               </button>
             </form>
+            )}
 
             <DataTable
+              canDelete={canEdit}
               headers={["Name", "Bio", "Image", ""]}
               rows={team.map((t) => ({
                 id: t._id,
@@ -359,7 +384,15 @@ type TableRow = {
   onDelete: () => void;
 };
 
-function DataTable({ headers, rows }: { headers: string[]; rows: TableRow[] }) {
+function DataTable({
+  headers,
+  rows,
+  canDelete = true,
+}: {
+  headers: string[];
+  rows: TableRow[];
+  canDelete?: boolean;
+}) {
   return (
     <div className="overflow-x-auto scroll-thin rounded-2xl border border-black/5 bg-white/60">
       <table className="w-full text-sm text-left text-slate-700">
@@ -401,13 +434,17 @@ function DataTable({ headers, rows }: { headers: string[]; rows: TableRow[] }) {
                   )}
                 </td>
                 <td className="px-5 py-3.5 text-right">
-                  <button
-                    onClick={row.onDelete}
-                    aria-label="Delete"
-                    className="grid place-items-center w-9 h-9 rounded-lg text-red-500 hover:bg-red-50 transition ml-auto"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {canDelete ? (
+                    <button
+                      onClick={row.onDelete}
+                      aria-label="Delete"
+                      className="grid place-items-center w-9 h-9 rounded-lg text-red-500 hover:bg-red-50 transition ml-auto"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <span className="text-slate-300">—</span>
+                  )}
                 </td>
               </tr>
             ))
