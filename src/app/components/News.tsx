@@ -114,8 +114,9 @@ export default function News() {
                 <div className="relative h-72 w-full overflow-hidden">
                   <Image
                     src={item.image || "/images/default.jpg"}
-                    alt={item.passage || "Program image"}
+                    alt={item.passage || "Voice of the Voiceless program"}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />

@@ -175,8 +175,9 @@ export default function Campaigns() {
                 <div className="relative h-52 w-full overflow-hidden group">
                   <Image
                     src={c.image || "/images/default.jpg"}
-                    alt={c.title || "Campaign"}
+                    alt={c.title ? `${c.title} campaign` : "Campaign"}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />

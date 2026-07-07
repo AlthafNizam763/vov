@@ -24,22 +24,23 @@ export default function About() {
 
             <Image
               src="/images/blanck1.jpg"
-              alt="Happy children"
+              alt="Children supported by Voice of the Voiceless charity"
               className="rounded-[1.75rem] shadow-xl object-cover w-full h-auto ring-1 ring-black/5"
               width={340}
               height={420}
-              priority
+              sizes="(max-width: 768px) 340px, 420px"
+              loading="lazy"
             />
 
             {/* Floating Green Icon */}
             <span className="absolute bg-gradient-to-br from-accent-400 to-accent-600 p-3 rounded-2xl shadow-xl flex items-center justify-center -top-6 -left-6 md:top-8 md:-left-10 border-4 border-white animate-float">
               <Image
                 src="/images/solidarity.png"
-                alt="Charity Icon"
+                alt="Solidarity icon"
                 className="w-8 h-8 md:w-10 md:h-10 object-contain"
                 width={40}
                 height={40}
-                priority
+                loading="lazy"
               />
             </span>
 
@@ -47,11 +48,12 @@ export default function About() {
             <div className="absolute -bottom-10 -right-4 md:-bottom-8 md:-right-12 shadow-2xl rounded-[1.25rem] overflow-hidden border-4 border-white w-[150px] sm:w-[185px]">
               <Image
                 src="/images/blanck2.jpg"
-                alt="Community support"
+                alt="Community support programs by Voice of the Voiceless"
                 className="object-cover w-full h-auto"
                 width={185}
                 height={130}
-                priority
+                sizes="185px"
+                loading="lazy"
               />
             </div>
 

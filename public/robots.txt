@@ -1,6 +1,9 @@
 # *
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /api
+Disallow: /LoginPage
 
 # Host
 Host: https://www.voiceofthevoiceless.co.in

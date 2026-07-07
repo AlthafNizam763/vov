@@ -18,11 +18,12 @@ export default function Founder() {
               <div className="relative rounded-[1.75rem] overflow-hidden shadow-2xl z-10 ring-1 ring-black/5">
                 <Image
                   src="/images/founder.jpeg"
-                  alt="Founder"
+                  alt="Mohammed Azhar A, Founder & Chairman of Voice of the Voiceless"
                   className="w-full h-auto object-cover"
                   width={420}
                   height={520}
-                  priority
+                  sizes="(max-width: 768px) 100vw, 420px"
+                  loading="lazy"
                 />
               </div>
 
@@ -39,9 +40,9 @@ export default function Founder() {
           {/* Right: Founder Content */}
           <Reveal delay={0.1}>
             <span className="eyebrow">Founder &amp; Chairman</span>
-            <h3 className="section-title text-2xl md:text-[2.2rem] mt-4 mb-2">
+            <h2 className="section-title text-2xl md:text-[2.2rem] mt-4 mb-2">
               Mohammed Azhar A
-            </h3>
+            </h2>
             <p className="text-lg font-semibold text-gradient mb-6">
               Azhar Pachalloor
             </p>

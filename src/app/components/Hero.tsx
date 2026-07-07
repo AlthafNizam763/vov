@@ -167,6 +167,8 @@ export default function Hero() {
           src="/images/map.png"
           alt=""
           fill
+          sizes="100vw"
+          aria-hidden="true"
           className="object-cover opacity-[0.08] mix-blend-luminosity"
         />
       </div>
@@ -223,10 +225,10 @@ export default function Hero() {
                 {heroData?.heading || "Mission NMMS"}
               </span>
 
-              <h3 className="font-display text-2xl font-bold text-ink mb-3 leading-snug">
+              <h2 className="font-display text-2xl font-bold text-ink mb-3 leading-snug">
                 {heroData?.headline ||
                   "Freedom of Movement for the Differently Abled"}
-              </h3>
+              </h2>
 
               <p className="text-slate-600 text-sm mb-6 leading-relaxed">
                 {heroData?.passage ||

@@ -75,11 +75,11 @@ export default function Stats() {
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="md:max-w-2xl">
               <span className="eyebrow">Act Now for a Better World</span>
-              <h3 className="section-title text-2xl md:text-[2rem] mt-3">
+              <h2 className="section-title text-2xl md:text-[2rem] mt-3">
                 Solutions to Help People in Need
                 <br className="hidden md:block" />
                 and <span className="text-gradient-accent">Save the Planet</span>
-              </h3>
+              </h2>
             </div>
 
             <button

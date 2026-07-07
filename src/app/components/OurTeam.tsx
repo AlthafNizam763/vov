@@ -89,7 +89,15 @@ export default function OurTeam() {
               <motion.img
                 key={current.image}
                 src={current.image || "/images/default.jpg"}
-                alt={current.name || "Team member"}
+                alt={
+                  current.name
+                    ? `${current.name} — Voice of the Voiceless team member`
+                    : "Team member"
+                }
+                loading="lazy"
+                decoding="async"
+                width={320}
+                height={384}
                 initial={{ opacity: 0, x: 50, scale: 1.05 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: -50 }}

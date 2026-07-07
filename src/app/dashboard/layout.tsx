@@ -4,6 +4,12 @@ import { DashboardUserProvider } from "./UserContext";
 import { getSession } from "../../lib/session-server";
 import { normalizeRole } from "../../lib/roles";
 
+// Admin area — keep it out of search indexes.
+export const metadata = {
+  title: "Admin Dashboard",
+  robots: { index: false, follow: false },
+};
+
 export default async function DashboardLayout({
   children,
 }: {

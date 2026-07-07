@@ -8,11 +8,11 @@ const SOCIALS = [
   { href: "https://www.facebook.com/share/19wxCiJRJK/?mibextid=wwXIfr", label: "Facebook", Icon: FaFacebookF },
 ]
 
-const LINKS = [
-  { href: "https://www.instagram.com/voice__of_the__voiceless?igsh=c2pxbjI5YnpmY3dm", label: "Instagram" },
-  { href: "https://wa.me/7034426975", label: "WhatsApp" },
-  { href: "https://www.facebook.com/share/19wxCiJRJK/?mibextid=wwXIfr", label: "Facebook" },
-  { href: "https://althafnizam763.github.io/-Personal-Portfolio/", label: "Supporter" },
+const QUICK_LINKS = [
+  { href: "/#about", label: "Who We Are" },
+  { href: "/#campaigns", label: "Our Campaign" },
+  { href: "/#news", label: "Latest News" },
+  { href: "/#contact", label: "Contact Us" },
 ]
 
 export default function Footer() {
@@ -78,16 +78,14 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Links */}
-        <div>
-          <h4 className="font-display text-base font-semibold mb-5 text-white">Links</h4>
+        {/* Quick Links (internal) */}
+        <nav aria-label="Footer quick links">
+          <h4 className="font-display text-base font-semibold mb-5 text-white">Quick Links</h4>
           <ul className="space-y-3 text-sm">
-            {LINKS.map((l) => (
+            {QUICK_LINKS.map((l) => (
               <li key={l.label}>
                 <Link
                   href={l.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="text-slate-400 hover:text-accent-300 transition-colors"
                 >
                   {l.label}
@@ -95,7 +93,7 @@ export default function Footer() {
               </li>
             ))}
           </ul>
-        </div>
+        </nav>
 
         {/* Contact Info */}
         <div>

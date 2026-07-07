@@ -118,7 +118,7 @@ export default function Header() {
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      <div
+      <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           showNav ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
         }`}
@@ -274,7 +274,7 @@ export default function Header() {
             </div>
           )}
         </nav>
-      </div>
+      </header>
 
       {/* Spacer so content doesn't hide under fixed header */}
       <div style={{ height: "104px" }}></div>

@@ -1,0 +1,21 @@
+{
+  "name": "Voice of the Voiceless",
+  "short_name": "VoV",
+  "description": "Kerala-based nonprofit helping people in need through compassion, awareness, and action.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f3f7fb",
+  "theme_color": "#1f7fd6",
+  "lang": "en-IN",
+  "categories": ["nonprofit", "charity", "social"],
+  "icons": [
+    {
+      "src": "/images/vov-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
