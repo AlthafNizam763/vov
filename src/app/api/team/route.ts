@@ -70,6 +70,66 @@ export async function POST(req: Request) {
   }
 }
 
+// 🟢 PUT — update a team member (image optional — kept if none uploaded)
+export async function PUT(req: Request) {
+  try {
+    const denied = await requireContentEditor();
+    if (denied) return denied;
+
+    const contentType = req.headers.get("content-type") || "";
+
+    let id = "";
+    const updates: TeamMember = {};
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      id = (formData.get("id") as string) || "";
+
+      updates.name = (formData.get("name") as string) ?? "";
+      updates.bio = (formData.get("bio") as string) ?? "";
+
+      // Only replace the image when a new file was actually chosen.
+      const imageFile = formData.get("image") as File | null;
+      if (imageFile && imageFile.size > 0) {
+        const bytes = await imageFile.arrayBuffer();
+        updates.image = `data:${imageFile.type};base64,${Buffer.from(bytes).toString("base64")}`;
+      }
+    } else {
+      const { id: bodyId, ...rest } = await req.json();
+      id = bodyId;
+      Object.assign(updates, rest as TeamMember);
+    }
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid team member id" }, { status: 400 });
+    }
+
+    if (!updates.name?.trim()) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGODB_DB);
+
+    const result = await db
+      .collection("team")
+      .updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { ...updates, updatedAt: new Date() } }
+      );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Team member not found" }, { status: 404 });
+    }
+
+    const updated = await db.collection("team").findOne({ _id: new ObjectId(id) });
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("❌ PUT /team failed:", err);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+}
+
 // 🟢 DELETE — remove a team member by ID
 export async function DELETE(req: Request) {
   try {

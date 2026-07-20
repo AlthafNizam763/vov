@@ -8,39 +8,8 @@ import { AiFillHeart } from "react-icons/ai";
 import { FaWhatsapp, FaInstagram, FaFacebookF } from "react-icons/fa";
 import { IoCall } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
-import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
-
-/* ------------------ ✅ Type Definitions ------------------ */
-interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: RazorpayResponse) => void;
-  theme: { color: string };
-}
-
-interface RazorpayInstance {
-  open: () => void;
-}
-
-interface RazorpayConstructor {
-  new (options: RazorpayOptions): RazorpayInstance;
-}
-
-interface RazorpayOrder {
-  id: string;
-  amount: number;
-  currency: string;
-}
+import { LogIn } from "lucide-react";
+import DonateDialog from "./DonateDialog";
 
 const NAV_LINKS = [
   { href: "#about", label: "Who we are" },
@@ -55,7 +24,7 @@ export default function Header() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [donateOpen, setDonateOpen] = useState(false);
 
   /* ------------------ Hide Navbar on Scroll ------------------ */
   useEffect(() => {
@@ -74,43 +43,9 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  /* ------------------ Razorpay Payment ------------------ */
-  const handleDonate = async (): Promise<void> => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/razorpay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 500 }), // ₹500 donation
-      });
-
-      const order: RazorpayOrder = await res.json();
-
-      const options: RazorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-        amount: order.amount,
-        currency: order.currency,
-        name: "Voice of the Voiceless",
-        description: "Donation",
-        order_id: order.id,
-        handler: (response: RazorpayResponse) => {
-          showDonationSuccess({ paymentId: response.razorpay_payment_id });
-        },
-        theme: { color: "#12b07a" },
-      };
-
-      const RazorpayConstructor = (window as unknown as {
-        Razorpay: RazorpayConstructor;
-      }).Razorpay;
-
-      const razor = new RazorpayConstructor(options);
-      razor.open();
-    } catch (error) {
-      console.error(error);
-      showPaymentError("Your payment could not be processed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const openDonate = () => {
+    setMobileMenuOpen(false);
+    setDonateOpen(true);
   };
 
   /* ------------------ JSX ------------------ */
@@ -149,7 +84,7 @@ export default function Header() {
               </a>
             </div>
 
-            {/* 🌐 Social icons & Hidden Dashboard */}
+            {/* 🌐 Social icons & Dashboard login */}
             <div className="flex items-center gap-3 mt-1 sm:mt-0">
               {[
                 { href: "https://wa.me/7034426975", label: "WhatsApp", Icon: FaWhatsapp },
@@ -175,15 +110,16 @@ export default function Header() {
                   <Icon className="text-[13px]" />
                 </a>
               ))}
-              {/* Hidden Support Dashboard Link */}
+
+              <span className="w-px h-4 bg-white/25" aria-hidden="true" />
+
+              {/* Support Dashboard Login */}
               <Link
                 href="/LoginPage"
-                aria-label="Support"
-                className="hover:opacity-80 transition-opacity ml-1"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-white hover:bg-white/25 hover:border-white/50 transition-colors"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="currentColor" opacity="0.7" />
-                </svg>
+                <LogIn className="w-3.5 h-3.5" />
+                Login
               </Link>
             </div>
           </div>
@@ -239,12 +175,11 @@ export default function Header() {
 
             {/* ✅ Donate Button */}
             <button
-              onClick={handleDonate}
-              disabled={loading}
+              onClick={openDonate}
               className="hidden md:inline-flex btn btn-primary text-sm px-5 py-2.5"
             >
-              {loading ? "Processing..." : "Donate Now"}
-              <AiFillHeart className={loading ? "hidden" : "text-white"} />
+              Donate Now
+              <AiFillHeart className="text-white" />
             </button>
           </div>
 
@@ -262,14 +197,18 @@ export default function Header() {
                     {link.label}
                   </a>
                 ))}
+                <Link
+                  href="/LoginPage"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 py-3 text-slate-700 font-medium border-b border-black/5 hover:text-brand-700 transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </Link>
               </div>
-              <button
-                onClick={handleDonate}
-                disabled={loading}
-                className="btn btn-primary w-full mt-4"
-              >
-                {loading ? "Processing..." : "Donate Now"}
-                <AiFillHeart className={loading ? "hidden" : "text-white"} />
+              <button onClick={openDonate} className="btn btn-primary w-full mt-4">
+                Donate Now
+                <AiFillHeart className="text-white" />
               </button>
             </div>
           )}
@@ -278,6 +217,8 @@ export default function Header() {
 
       {/* Spacer so content doesn't hide under fixed header */}
       <div style={{ height: "104px" }}></div>
+
+      <DonateDialog open={donateOpen} onClose={() => setDonateOpen(false)} />
     </>
   );
 }

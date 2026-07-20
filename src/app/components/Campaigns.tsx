@@ -6,7 +6,7 @@ import Script from "next/script";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { AiFillHeart } from "react-icons/ai";
-import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
+import DonateDialog from "./DonateDialog";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -21,28 +21,10 @@ type Campaign = {
   tag?: string;
 };
 
-// ✅ Define RazorpayResponse type
-interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
-// ✅ Define RazorpayOptions type
-interface RazorpayOptions {
-  key: string | undefined;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: RazorpayResponse) => void;
-  theme: { color: string };
-}
-
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [donateTarget, setDonateTarget] = useState<{ name?: string } | null>(null);
 
   useEffect(() => {
     const fetchCampaigns = async () => {
@@ -59,45 +41,6 @@ export default function Campaigns() {
     };
     fetchCampaigns();
   }, []);
-
-  // 🪙 Handle Razorpay Payment
-  const handleDonate = async (amount: number, campaignName?: string) => {
-    try {
-      const res = await fetch("/api/razorpay", { method: "POST" });
-      const data = await res.json();
-
-      if (!data.id) {
-        showPaymentError("We couldn't start the payment. Please try again.");
-        return;
-      }
-
-      const options: RazorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: amount * 100, // paise
-        currency: "INR",
-        name: "Voice of the Voiceless",
-        description: campaignName || "Donation Campaign",
-        order_id: data.id,
-        handler: function (response: RazorpayResponse) {
-          showDonationSuccess({
-            paymentId: response.razorpay_payment_id,
-            message: campaignName
-              ? `Thank you for supporting “${campaignName}”.`
-              : "Thank you — your support changes lives.",
-          });
-        },
-        theme: { color: "#12b07a" },
-      };
-
-      // ✅ Correctly type Razorpay
-      const RazorpayConstructor = (window as unknown as { Razorpay: new (options: RazorpayOptions) => { open: () => void } }).Razorpay;
-      const razor = new RazorpayConstructor(options);
-      razor.open();
-    } catch (err) {
-      console.error("Error starting payment:", err);
-      showPaymentError();
-    }
-  };
 
   const SectionShell = ({ children }: { children: React.ReactNode }) => (
     <section id="campaigns" className="relative bg-canvas py-24 overflow-hidden">
@@ -212,17 +155,12 @@ export default function Campaigns() {
                       />
                     </div>
 
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => handleDonate(goal / 10, c.title)}
-                        className="btn btn-primary flex-1 text-sm py-2.5 px-3"
-                      >
-                        Donate <AiFillHeart className="text-white" />
-                      </button>
-                      <button className="btn btn-outline flex-1 text-sm py-2.5 px-3">
-                        See detail
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setDonateTarget({ name: c.title })}
+                      className="btn btn-primary w-full text-sm py-2.5 px-3"
+                    >
+                      Donate <AiFillHeart className="text-white" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -230,6 +168,12 @@ export default function Campaigns() {
           );
         })}
       </Swiper>
+
+      <DonateDialog
+        open={donateTarget !== null}
+        onClose={() => setDonateTarget(null)}
+        campaignName={donateTarget?.name}
+      />
     </SectionShell>
   );
 }

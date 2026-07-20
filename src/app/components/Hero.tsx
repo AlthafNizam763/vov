@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaApplePay, FaGooglePay, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import Script from "next/script";
-import { showDonationSuccess, showPaymentError } from "./paymentFeedback";
+import DonateDialog from "./DonateDialog";
 import "./hero-animations.css";
 
 /* ✅ Type Definitions */
@@ -15,30 +15,6 @@ interface HeroData {
   amountRaised: number;
   amount: number;
   image?: string;
-}
-
-interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: RazorpayResponse) => void;
-  theme: { color: string };
-  method?: Record<string, boolean>;
-}
-
-declare global {
-  interface Window {
-    Razorpay: new (options: RazorpayOptions) => { open: () => void };
-  }
 }
 
 /* ------------------ Circular Text Play Button ------------------ */
@@ -79,9 +55,10 @@ function CircularTextPlay() {
 
 /* ------------------ Hero Section ------------------ */
 export default function Hero() {
-  const [loading, setLoading] = useState(false);
   const [heroData, setHeroData] = useState<HeroData | null>(null);
   const [amount, setAmount] = useState(120000);
+  /** null = dialog closed; "" = any method; otherwise a Razorpay method key. */
+  const [donateMethod, setDonateMethod] = useState<string | null>(null);
 
   // ✅ define your total goal
   const goal = heroData?.amount || 200000;
@@ -113,44 +90,6 @@ export default function Hero() {
 
   // ✅ calculate percentage safely
   const percentage = Math.min((amount / goal) * 100, 100);
-
-  // ✅ Razorpay Payment Handler
-  const handlePayment = async (method: string): Promise<void> => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/razorpay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 1000 }),
-      });
-      const order = await res.json();
-
-      const options: RazorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-        amount: order.amount,
-        currency: order.currency,
-        name: "Voice of the Voiceless",
-        description: `Donation via ${method}`,
-        order_id: order.id,
-        handler: (response: RazorpayResponse) => {
-          showDonationSuccess({
-            paymentId: response.razorpay_payment_id,
-            message: `Thank you for donating via ${method}.`,
-          });
-        },
-        theme: { color: "#12b07a" },
-        method: { [method.toLowerCase()]: true },
-      };
-
-      const razor = new window.Razorpay(options);
-      razor.open();
-    } catch (err) {
-      console.error(err);
-      showPaymentError("Your payment could not be processed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <section className="relative overflow-hidden text-white">
@@ -251,20 +190,27 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Razorpay Buttons */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Donate — opens the amount dialog */}
+              <button
+                onClick={() => setDonateMethod("")}
+                className="btn btn-primary w-full"
+              >
+                Donate Now
+              </button>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <button
-                  onClick={() => handlePayment("ApplePay")}
-                  disabled={loading}
-                  className="rounded-xl py-3 flex justify-center items-center gap-2 transition bg-white/80 border border-white/70 shadow-sm hover:bg-white hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                  onClick={() => setDonateMethod("wallet")}
+                  aria-label="Donate with Apple Pay"
+                  className="rounded-xl py-3 flex justify-center items-center gap-2 transition bg-white/80 border border-white/70 shadow-sm hover:bg-white hover:-translate-y-0.5"
                 >
                   <FaApplePay className="text-4xl text-black" />
                 </button>
 
                 <button
-                  onClick={() => handlePayment("GooglePay")}
-                  disabled={loading}
-                  className="rounded-xl py-3 flex justify-center items-center gap-2 transition bg-white/80 border border-white/70 shadow-sm hover:bg-white hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                  onClick={() => setDonateMethod("upi")}
+                  aria-label="Donate with Google Pay"
+                  className="rounded-xl py-3 flex justify-center items-center gap-2 transition bg-white/80 border border-white/70 shadow-sm hover:bg-white hover:-translate-y-0.5"
                 >
                   <FaGooglePay className="text-4xl text-black" />
                 </button>
@@ -296,6 +242,12 @@ export default function Hero() {
           d="M0,48 C240,80 480,80 720,56 C960,32 1200,16 1440,40 L1440,80 L0,80 Z"
         />
       </svg>
+
+      <DonateDialog
+        open={donateMethod !== null}
+        onClose={() => setDonateMethod(null)}
+        method={donateMethod || undefined}
+      />
     </section>
   );
 }

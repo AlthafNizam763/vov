@@ -75,6 +75,68 @@ export async function POST(req: Request) {
   }
 }
 
+// 🔹 PUT update an existing campaign (image optional — kept if none uploaded)
+export async function PUT(req: Request) {
+  try {
+    const denied = await requireContentEditor();
+    if (denied) return denied;
+
+    const contentType = req.headers.get("content-type") || "";
+
+    let id = "";
+    const updates: Campaign = {};
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      id = (formData.get("id") as string) || "";
+
+      updates.title = (formData.get("title") as string) ?? "";
+      updates.passage = (formData.get("passage") as string) ?? "";
+      updates.amount = (formData.get("amount") as string) ?? "";
+      updates.detail = (formData.get("detail") as string) ?? "";
+
+      // Only replace the image when a new file was actually chosen.
+      const imageFile = formData.get("image") as File | null;
+      if (imageFile && imageFile.size > 0) {
+        const bytes = await imageFile.arrayBuffer();
+        updates.image = `data:${imageFile.type};base64,${Buffer.from(bytes).toString("base64")}`;
+      }
+    } else {
+      const { id: bodyId, ...rest } = await req.json();
+      id = bodyId;
+      Object.assign(updates, rest as Campaign);
+    }
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid campaign id" }, { status: 400 });
+    }
+
+    if (!updates.title?.trim()) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGODB_DB);
+
+    const result = await db
+      .collection("campaigns")
+      .updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { ...updates, updatedAt: new Date() } }
+      );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    const updated = await db.collection("campaigns").findOne({ _id: new ObjectId(id) });
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("❌ PUT /campaigns failed:", err);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+}
+
 // 🔹 DELETE campaign by ID
 export async function DELETE(req: Request) {
   try {
