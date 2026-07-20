@@ -169,11 +169,11 @@ export default function DonateDialog({
       aria-labelledby="donate-dialog-title"
     >
       <div
-        className="absolute inset-0 bg-ink/50 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-ink/50 backdrop-blur-sm animate-overlay-in"
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md glass-strong rounded-[1.5rem] shadow-2xl p-6 sm:p-7 animate-slide-up">
+      <div className="relative w-full max-w-md glass-strong rounded-[1.5rem] shadow-2xl p-6 sm:p-7 animate-panel-in">
         <button
           onClick={onClose}
           aria-label="Close"

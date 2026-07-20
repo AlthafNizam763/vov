@@ -183,10 +183,15 @@ export default function Hero() {
                   />
                 </div>
                 <div className="flex justify-between text-sm mt-2.5">
+                  {/* Explicit locale: a bare toLocaleString() formats with the
+                      server's locale during SSR and the browser's on the client,
+                      which mismatches on hydration and forces a full re-render. */}
                   <span className="font-semibold text-ink">
-                    ₹{amount.toLocaleString()} Raised
+                    ₹{amount.toLocaleString("en-IN")} Raised
                   </span>
-                  <span className="text-slate-500">₹{goal.toLocaleString()} Goal</span>
+                  <span className="text-slate-500">
+                    ₹{goal.toLocaleString("en-IN")} Goal
+                  </span>
                 </div>
               </div>
 
