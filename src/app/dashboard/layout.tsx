@@ -1,5 +1,6 @@
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import SessionGuard from "./SessionGuard";
 import { DashboardUserProvider } from "./UserContext";
 import { getSession } from "../../lib/session-server";
 import { normalizeRole } from "../../lib/roles";
@@ -25,6 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <DashboardUserProvider user={user}>
+      <SessionGuard />
       <div className="dash-bg min-h-screen">
         <div className="flex min-h-screen">
           <Sidebar />

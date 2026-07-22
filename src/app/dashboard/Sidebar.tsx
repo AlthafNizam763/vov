@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LayoutGrid, Users, FileEdit, LogOut } from "lucide-react";
+import { useState } from "react";
+import { performLogout } from "../../lib/logout";
 
 const LINKS = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
@@ -13,19 +15,17 @@ const LINKS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname?.startsWith(href);
 
   const handleLogout = async () => {
-    try {
-      await fetch("/api/users/logout", { method: "POST" });
-    } catch {
-      /* ignore network error — still navigate away */
-    }
-    // Hard navigation to Home clears the client router cache so the dashboard
-    // can't be revealed via the back button after logging out.
-    window.location.href = "/";
+    if (loggingOut) return; // ignore double-clicks
+    setLoggingOut(true);
+    // Clears the cookie, notifies other tabs, then hard-replaces the current
+    // history entry with the login page.
+    await performLogout();
   };
 
   return (
@@ -79,11 +79,14 @@ export default function Sidebar() {
       <div className="p-3 lg:p-4 border-t border-black/5">
         <button
           onClick={handleLogout}
+          disabled={loggingOut}
           title="Logout"
-          className="nav-link w-full justify-center lg:justify-start text-red-500 hover:!bg-red-50 hover:!text-red-600"
+          className="nav-link w-full justify-center lg:justify-start text-red-500 hover:!bg-red-50 hover:!text-red-600 disabled:opacity-60"
         >
           <LogOut size={20} strokeWidth={2} className="shrink-0" />
-          <span className="hidden lg:inline">Logout</span>
+          <span className="hidden lg:inline">
+            {loggingOut ? "Signing out..." : "Logout"}
+          </span>
         </button>
       </div>
     </aside>
